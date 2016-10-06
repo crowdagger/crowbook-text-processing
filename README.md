@@ -11,7 +11,7 @@ See the
 
 ## ChangeLog ##
 
-See [the ChangeLog file][ChangeLog.md].
+See [the ChangeLog file](ChangeLog.md).
 
 
 ## Author ##
