@@ -1,6 +1,6 @@
 [package]
 name = "crowbook-text-processing"
-version = "0.1.0-unreleased"
+version = "0.1.0"
 authors = ["Elisabeth Henry <liz.henry@ouvaton.org>"]
 description = "Some text processing functions written for Crowbook and moved in a separate library. Include html/tex escaping, unnecessary whitespace cleaning, and french typographic formatting."
 readme = "README.md"
@@ -8,7 +8,7 @@ keywords = ["text"]
 repository = "https://github.com/lise-henry/crowbook-text-processing/"
 documentation = "https://docs.rs/crowbook-text-processing"
 license = "MPL-2.0"
-publish = false
+publish = true
 
 [dependencies]
 regex = "0.1"
