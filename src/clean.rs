@@ -2,6 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with
 // this file, You can obtain one at https://mozilla.org/MPL/2.0/.  
 
+use common::is_whitespace;
+
 use regex::Regex;
 use std::borrow::Cow;
 
@@ -42,14 +44,6 @@ pub fn remove_whitespaces<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
         input
     }
 }
-
-/// Custom function because we don't really want to touch \t or \n
-///
-/// This function detects spaces and non breking spaces
-fn is_whitespace(c: char) -> bool {
-    c == ' ' || c == ' ' || c == ' '
-}
-
 
 #[test]
 fn remove_whitespaces_1() {

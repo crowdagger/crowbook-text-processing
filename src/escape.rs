@@ -2,13 +2,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with
 // this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use common::{NB_CHAR, NB_CHAR_NARROW, NB_CHAR_EM};
+
 use std::borrow::Cow;
 use regex::Regex;
-
-const NB_CHAR:char = ' '; // non breaking space
-const NB_CHAR_NARROW:char = '\u{202F}'; // narrow non breaking space
-const NB_CHAR_EM:char = '\u{2002}'; // demi em space
-
 
 /// Escape non breaking spaces for HTML, so there is no problem for displaying them if the font or browser
 /// doesn't know what to do with them (particularly the narrow non breaking space which isn't very
@@ -27,6 +24,39 @@ pub fn escape_nb_spaces<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
                 NB_CHAR_NARROW  => output.push_str(r#"<span class = "nnbsp">&#8201;</span>"#),
                 NB_CHAR_EM => output.push_str(r#"<span class = "ensp">&#8194;</span>"#),
                 NB_CHAR => output.push_str(r#"<span class = "nbsp">&#160;</span>"#),
+                _ => output.push(c),
+            }
+        }
+        Cow::Owned(output)
+    } else {
+        input.into()
+    }
+}
+
+
+/// Escape non breaking spaces for LaTeX, replacing them with `~`.
+///
+/// # Example
+///
+/// ```
+/// use crowbook_text_processing::escape::escape_nb_spaces_tex;
+/// let s = escape_nb_spaces_tex("Des espaces insécables ? Ça alors !");
+/// assert_eq!(&s, "Des espaces insécables~? Ça alors~!");
+/// ```
+pub fn escape_nb_spaces_tex<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
+    let input = input.into();
+    if let Some(first) = input.chars().position(|c| match c {
+        NB_CHAR | NB_CHAR_NARROW | NB_CHAR_EM => true,
+        _ => false
+    }) {
+        let mut chars = input.chars().collect::<Vec<_>>();
+        let rest = chars.split_off(first);
+        let mut output = chars.into_iter().collect::<String>();
+        for c in rest {
+            match c {
+                NB_CHAR_NARROW  => output.push('~'),
+                NB_CHAR_EM => output.push('~'),
+                NB_CHAR => output.push('~'),
                 _ => output.push(c),
             }
         }
@@ -168,6 +198,13 @@ fn tex_escape_nothing() {
 fn nb_spaces_escape_nothing() {
     let s = "Some string without any character to escape";
     let result = escape_nb_spaces(s);
+    assert_eq!(s, &result);
+}
+
+#[test]
+fn tex_nb_spaces_escape_nothing() {
+    let s = "Some string without any character to escape";
+    let result = escape_nb_spaces_tex(s);
     assert_eq!(s, &result);
 }
 

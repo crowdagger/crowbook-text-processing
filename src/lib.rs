@@ -7,3 +7,6 @@ extern crate regex;
 
 pub mod escape;
 pub mod clean;
+pub mod french;
+
+mod common;
