@@ -11,7 +11,8 @@ const NB_CHAR_EM:char = '\u{2002}'; // demi em space
 
 
 /// Escape non breaking spaces for HTML, so there is no problem for displaying them if the font or browser
-/// doesn't know what to do with them
+/// doesn't know what to do with them (particularly the narrow non breaking space which isn't very
+/// well supported.
 pub fn escape_nb_spaces<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
     let input = input.into();
     if let Some(first) = input.chars().position(|c| match c {
@@ -38,7 +39,11 @@ pub fn escape_nb_spaces<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
 
 /// Escape characters `<`, `>`, and `&`
 ///
-/// # Examples
+/// **Warning**: this function was written for escaping text in a markdown
+/// text processor that is designed to run on a local machine, so the content
+/// can actually be trusted, it should *not* be used for untrusted content.
+///
+/// # Example
 ///
 /// ```
 /// use crowbook_text_processing::escape::escape_html;
@@ -72,7 +77,7 @@ pub fn escape_html<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
 
 /// Escape quotes
 ///
-/// Replace `"` by `'`
+/// Simply replace `"` by `'`
 pub fn escape_quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
     let input = input.into();
     if input.contains('"') {
@@ -92,7 +97,7 @@ pub fn escape_quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
 
 /// Escape characters for LaTeX
 ///
-/// # Examples
+/// # Example
 ///
 /// ```
 /// use crowbook_text_processing::escape::escape_tex;
