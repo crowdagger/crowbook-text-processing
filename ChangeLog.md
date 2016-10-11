@@ -1,6 +1,11 @@
 ChangeLog
 ==========
 
+unreleased
+-------------
+* Added `format_tex` to the `FrenchFormatter`.
+
+	
 0.1.1 (2016-10-06)
 --------------------
 * Added `remove_whitespaces` from Crowbook 0.9.1.
