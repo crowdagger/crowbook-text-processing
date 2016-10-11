@@ -29,9 +29,9 @@ fn main() {
     println!("for LaTeX: {}", escape_tex(new_s));
     
     let s = " Une chaîne en français ! On voudrait un résultat « typographiquement correct ».";
-    let new_s = FrenchFormatter::new().format(s);
-    println!("for HTML: {}", escape_nb_spaces(escape_html(new_s.clone())));
-    println!("for LaTeX: {}", escape_nb_spaces_tex(escape_tex(new_s)));
+    let french = FrenchFormatter::new();
+    println!("for HTML: {}", escape_nb_spaces(escape_html(french.format(s))));
+    println!("for LaTeX: {}", escape_tex(french.format_tex(s)));
 }
 ```
 
