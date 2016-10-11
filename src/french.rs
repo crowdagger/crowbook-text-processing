@@ -7,6 +7,13 @@ use clean::remove_whitespaces;
 
 use std::borrow::Cow;
 
+/// Output format, to determine how to escape characters
+enum Output {
+    Default,
+    Latex
+}
+
+
 /// French typographic formatter.
 ///
 /// The purpose of this struct is to try to make a text more typographically correct,
@@ -102,9 +109,31 @@ impl FrenchFormatter {
     /// println!("{}", s);
     /// ```
     pub fn format<'a, S:Into<Cow<'a, str>>>(&self, input: S) -> Cow<'a, str> {
+        self.format_output(input, Output::Default)
+    }
+
+    /// (Try to) Format a string according to french typographic rules, and use '~' so it works
+    /// correctly with LaTeX output.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use crowbook_text_processing::french::FrenchFormatter;
+    /// let f = FrenchFormatter::new();
+    /// let s = f.format_tex("« Est-ce bien formaté ? »");
+    /// assert_eq!(&s, "«~Est-ce bien formaté~?~»");
+    /// ```
+    pub fn format_tex<'a, S:Into<Cow<'a, str>>>(&self, input: S) -> Cow<'a, str> {
+        self.format_output(input, Output::Latex)
+    }
+
+
+    /// (Try to) Format a string according to french typographic rules, and escaping non-breaking
+    /// spaces according to output format
+    fn format_output<'a, S:Into<Cow<'a, str>>>(&self, input: S, output: Output) -> Cow<'a, str> {
         let input = remove_whitespaces(input); // first pass to remove whitespaces
 
-        // Find first character that is trouble
+        // Find first characters that are trouble
         let first = input.chars().position(is_trouble);
         let first_number = input.chars().position(|c| c.is_digit(10));
 
@@ -112,6 +141,11 @@ impl FrenchFormatter {
         if first.is_none() && first_number.is_none() {
             return input;
         }
+
+        let (nb_char, nb_char_em, nb_char_narrow) = match output {
+            Output::Default => (NB_CHAR, NB_CHAR_EM, NB_CHAR_NARROW),
+            Output::Latex => ('~', '~', '~')
+        };
 
         let mut found_opening_quote = false; // we didn't find an opening quote yet
         let mut chars = input.chars().collect::<Vec<_>>();
@@ -139,7 +173,7 @@ impl FrenchFormatter {
                     c if c.is_whitespace() => {
                         if is_number_series && (next.is_digit(10) || self.char_is_symbol(&chars, i+1)) {
                             // Next char is a number or symbol such as $, and previous was number
-                            chars[i] = NB_CHAR_NARROW;
+                            chars[i] = nb_char_narrow;
                         }
                     },
                     _ => { is_number_series = false; }
@@ -161,15 +195,15 @@ impl FrenchFormatter {
                 if is_whitespace(current) {
                     match next {
                         // handle narrow nb space before char
-                        '?' | '!' | ';' => chars[i] = NB_CHAR_NARROW,
-                        ':' => chars[i] = NB_CHAR,
+                        '?' | '!' | ';' => chars[i] = nb_char_narrow,
+                        ':' => chars[i] = nb_char,
                         '»' => if current == ' ' {
                             // Assumne that if it isn't a normal space it was used here for good reason, don't replace it
                             if found_opening_quote {
                                 // not the end of a dialogue
-                                chars[i] = NB_CHAR;
+                                chars[i] = nb_char;
                             } else {
-                                chars[i] = NB_CHAR;
+                                chars[i] = nb_char;
                             }
                         },
                         _ => (),
@@ -182,49 +216,49 @@ impl FrenchFormatter {
                                 let replacing_char = match current {
                                     '—' | '-' | '–' => {
                                         if i <= 1 {
-                                            NB_CHAR_EM
+                                            nb_char_em
                                         } else {
-                                            if chars[i-1] == NB_CHAR {
+                                            if chars[i-1] == nb_char {
                                                 // non breaking space before, so probably should have a breakable one after
                                                 ' '
                                             } else {
                                                 if let Some(closing) = self.find_closing_dash(&chars, i+1) {
-                                                    chars[closing] = NB_CHAR;
+                                                    chars[closing] = nb_char;
                                                 }
-                                                NB_CHAR
+                                                nb_char
                                             }
                                         }
                                     },
                                     '«' => {
                                         found_opening_quote = true;
                                         if i <= 1 {
-                                            NB_CHAR
+                                            nb_char
                                         } else {
                                             let j = find_next(&chars, '»', i);
                                             if let Some(j) = j {
                                             if chars[j-1].is_whitespace() {
                                                 if j >= chars.len() - 1 {
                                                     // » is at the end, assume it is a dialogue
-                                                    chars[j-1] = NB_CHAR;
-                                                    NB_CHAR
+                                                    chars[j-1] = nb_char;
+                                                    nb_char
                                                 } else {
                                                     if j - i > self.threshold_quote {
                                                         // It's a quote, so use large space?
-                                                        chars[j-1] = NB_CHAR;
-                                                        NB_CHAR
+                                                        chars[j-1] = nb_char;
+                                                        nb_char
                                                     } else {
                                                         // Not long enough to be a quote, use narrow nb char
-                                                        chars[j-1] = NB_CHAR_NARROW;
-                                                        NB_CHAR_NARROW
+                                                        chars[j-1] = nb_char_narrow;
+                                                        nb_char_narrow
                                                     }
                                                 }
                                             } else {
                                                 // wtf formatting?
-                                                NB_CHAR
+                                                nb_char
                                             }
                                         } else {
                                                 // No ending quote found, assume is a dialogue
-                                                NB_CHAR
+                                                nb_char
                                             }
                                         }
                                     }, // TODO: better heuristic: use narrow nb_char if not at front???
@@ -369,8 +403,6 @@ fn get_next_word(v: &[char], n: usize) -> &[char] {
 
 
 #[cfg(test)]
-use escape::escape_nb_spaces_tex;
-
 #[test]
 fn french() {
     let s = "  «  Comment allez-vous ? » demanda-t-elle à son   interlocutrice  qui lui répondit  : « Mais très bien ma chère  !  »";
@@ -381,14 +413,14 @@ fn french() {
 #[test]
 fn french_dashes_1() {
     let s = "Il faudrait gérer ces tirets – sans ça certains textes rendent mal – un jour ou l'autre";
-    let res = escape_nb_spaces_tex(FrenchFormatter::new().format(s));
+    let res = FrenchFormatter::new().format_tex(s);
     assert_eq!(&res, "Il faudrait gérer ces tirets –~sans ça certains textes rendent mal~– un jour ou l'autre");
 }
 
 #[test]
 fn french_dashes_2() {
     let s = "Il faudrait gérer ces tirets – sans ça certains textes rendent mal. Mais ce n'est pas si simple – si ?";
-    let res = escape_nb_spaces_tex(FrenchFormatter::new().format(s));
+    let res = FrenchFormatter::new().format_tex(s);
     assert_eq!(&res, "Il faudrait gérer ces tirets –~sans ça certains textes rendent mal. Mais ce n'est pas si simple –~si~?");
 }
 
@@ -397,39 +429,39 @@ fn french_numbers() {
     let french = FrenchFormatter::new();
     
     let s = Cow::Borrowed("10 000");
-    let res = escape_nb_spaces_tex(french.format(s));
+    let res = french.format_tex(s);
     assert_eq!(&res, "10~000");
 
     let s = Cow::Borrowed("10 000 €");
-    let res = escape_nb_spaces_tex(french.format(s));
+    let res = french.format_tex(s);
     assert_eq!(&res, "10~000~€");
     
     let s = Cow::Borrowed("10 000 euros");
-    let res = escape_nb_spaces_tex(french.format(s));
+    let res = french.format_tex(s);
     assert_eq!(&res, "10~000 euros");
 
     let s = Cow::Borrowed("10 000 EUR");
-    let res = escape_nb_spaces_tex(french.format(s));
+    let res = french.format_tex(s);
     assert_eq!(&res, "10~000~EUR");
 
     let s = Cow::Borrowed("50 km");
-    let res = escape_nb_spaces_tex(french.format(s));
+    let res = french.format_tex(s);
     assert_eq!(&res, "50~km");
 
     let s = Cow::Borrowed("50 %");
-    let res = escape_nb_spaces_tex(french.format(s));
+    let res = french.format_tex(s);
     assert_eq!(&res, "50~%");
 
     let s = Cow::Borrowed("20 °C");
-    let res = escape_nb_spaces_tex(french.format(s));
+    let res = french.format_tex(s);
     assert_eq!(&res, "20~°C");
 
     let s = Cow::Borrowed("20 F");
-    let res = escape_nb_spaces_tex(french.format(s));
+    let res = french.format_tex(s);
     assert_eq!(&res, "20~F");
 
     let s = Cow::Borrowed("20 BALLES");
-    let res = escape_nb_spaces_tex(french.format(s));
+    let res = french.format_tex(s);
     assert_eq!(&res, "20 BALLES");
 }
 
