@@ -58,5 +58,5 @@ version 2.0](https://www.mozilla.org/en-US/MPL/2.0/).
 
 While not yet at version `1.0`, this crates tries to follows semantic versioning in the following way:
 
-* an increase of `x` in `0.x.y` means breaking changes.
-* an increase of `y` in `0.x.y` means non-breaking changes.
+* an increase of `x` in `0.x.y` means there is some breaking change. 
+* an increase of `y` in `0.x.y` means there should not be any breaking changes.
