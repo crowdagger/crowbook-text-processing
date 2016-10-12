@@ -26,6 +26,9 @@
 //! println!("for HTML: {}", escape_nb_spaces(escape_html(new_s.clone())));
 //! println!("for LaTeX: {}", escape_nb_spaces_tex(escape_tex(new_s)));
 //! ```
+//! # Requirements
+//!
+//! * `rustc >= 1.6.0`
 //!
 //! # Semantic versioning
 //!

@@ -8,7 +8,6 @@ keywords = ["text"]
 repository = "https://github.com/lise-henry/crowbook-text-processing/"
 documentation = "https://docs.rs/crowbook-text-processing"
 license = "MPL-2.0"
-publish = true
 
 [dependencies]
 regex = "0.1"

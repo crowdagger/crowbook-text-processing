@@ -54,6 +54,10 @@ See [the ChangeLog file](ChangeLog.md).
 This is free software, published under the [Mozilla Public License,
 version 2.0](https://www.mozilla.org/en-US/MPL/2.0/).
 
+## Requirements ##
+
+* `rustc >= 1.6.0`
+
 ## Semantic versioning ##
 
 While not yet at version `1.0`, this crates tries to follows semantic versioning in the following way:
