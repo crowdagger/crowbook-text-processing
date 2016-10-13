@@ -1,8 +1,8 @@
 ChangeLog
 ==========
 
-unreleased
-------------
+0.1.3 (2016-10-13)
+----------------------
 * Now use Travis for continuous integration.
 * Found & documented rustc minimal version to build this lib (1.6.0)
 * `FrenchFormatter` now implements the `Default` and `Debug` traits.
