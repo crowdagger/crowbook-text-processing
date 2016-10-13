@@ -2,10 +2,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with
 // this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use common::{is_whitespace, NB_CHAR, NB_CHAR_NARROW, NB_CHAR_EM};
-use clean::remove_whitespaces;
-
 use std::borrow::Cow;
+use std::default::Default;
+
+use common::{NB_CHAR, NB_CHAR_NARROW, NB_CHAR_EM};
+use common::is_whitespace;
+use clean::remove_whitespaces;
 
 /// Output format, to determine how to escape characters
 enum Output {
@@ -28,6 +30,7 @@ enum Output {
 ///
 /// As this requires a bit of guessing sometimes, there are some paremeters that can be set
 /// if you want better results.
+#[derive(Debug)]
 pub struct FrenchFormatter {
     /// After that number of characters, assume it's not a currency
     threshold_currency: usize,
@@ -39,15 +42,21 @@ pub struct FrenchFormatter {
     threshold_real_word: usize,
 }
 
-impl FrenchFormatter {
-    /// Create a new FrenchFormatter with default settings
-    pub fn new() -> FrenchFormatter {
+impl Default for FrenchFormatter {
+    fn default() -> Self {
         FrenchFormatter {
             threshold_currency: 3,
             threshold_unit: 2,
             threshold_quote: 28,
             threshold_real_word: 3,
         }
+    }
+}
+
+impl FrenchFormatter {
+    /// Create a new FrenchFormatter with default settings
+    pub fn new() -> Self {
+        Self::default()
     }
 
     /// Sets the threshold currency.
