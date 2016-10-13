@@ -226,9 +226,9 @@ impl FrenchFormatter {
                                             ' '
                                         } else {
                                             if let Some(closing) =
-                                                self.find_closing_dash(&chars, i + 1) {
-                                                    chars[closing] = nb_char;
-                                                }
+                                                   self.find_closing_dash(&chars, i + 1) {
+                                                chars[closing] = nb_char;
+                                            }
                                             nb_char
                                         }
                                     }
@@ -239,9 +239,12 @@ impl FrenchFormatter {
                                             let j = find_next(&chars, '»', i);
                                             if let Some(j) = j {
                                                 if chars[j - 1].is_whitespace() {
-                                                    if j >= chars.len() - 1 || j - 1 > self.threshold_quote {
-                                                        // Either '»' is at the end, assume it is a dialogue
-                                                        // or it's a quote, so large space
+                                                    if j >= chars.len() - 1 ||
+                                                       j - 1 > self.threshold_quote {
+                                                        // Either '»' is at the end
+                                                        // => assume it is a dialogue
+                                                        // or it's a quote
+                                                        // => 'large' space too
                                                         chars[j - 1] = nb_char;
                                                         nb_char
                                                     } else {
