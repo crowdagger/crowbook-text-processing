@@ -12,20 +12,29 @@
 //! # Example
 //!
 //! ```
-//! use crowbook_text_processing::escape::*;
-//! use crowbook_text_processing::clean::*;
-//! use crowbook_text_processing::french::FrenchFormatter;
+//! use crowbook_text_processing::{
+//!     FrenchFormatter,
+//!     escape_html,
+//!     escape_tex,
+//!     remove_whitespaces,
+//! };
 //!
 //! let s = " Some  string with  too much   whitespaces & around 1% \
 //!          characters that might cause trouble to HTML or LaTeX.";
+//! // Remove unnecessary whitespaces (but doesn't trim at is can have meaning)
 //! let new_s = remove_whitespaces(s);
+//! // Display to HTML
 //! println!("for HTML: {}", escape_html(new_s.clone()));
+//! // Display to LaTeX
 //! println!("for LaTeX: {}", escape_tex(new_s));
 //!
-//! let s = " Une chaîne en français ! On voudrait un résultat « typographiquement correct ».";
-//! let new_s = FrenchFormatter::new().format(s);
-//! println!("for HTML: {}", escape_nb_spaces(escape_html(new_s.clone())));
-//! println!("for LaTeX: {}", escape_nb_spaces_tex(escape_tex(new_s)));
+//! // Format whitespaces according to french typographic rules, using
+//! // the appropriate non-breaking spaces where needed
+//! let s = " Une chaîne en français ! On voudrait un résultat \
+//!          « typographiquement correct ».";
+//! let french = FrenchFormatter::new();
+//! println!("for text: {}", french.format(s));
+//! println!("for LaTeX: {}", escape_tex(french.format_tex(s)));
 //! ```
 //! # Requirements
 //!
@@ -47,3 +56,7 @@ pub mod clean;
 pub mod french;
 
 mod common;
+
+pub use escape::{escape_html, escape_tex};
+pub use clean::remove_whitespaces;
+pub use french::FrenchFormatter;
