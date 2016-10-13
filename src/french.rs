@@ -158,7 +158,6 @@ impl FrenchFormatter {
             Output::Latex => ('~', '~', '~'),
         };
 
-        let mut found_opening_quote = false; // we didn't find an opening quote yet
         let mut chars = input.chars().collect::<Vec<_>>();
         let mut is_number_series = false;
 
@@ -173,9 +172,7 @@ impl FrenchFormatter {
 
                 match current {
                     '0'...'9' => {
-                        if i == 0 {
-                            is_number_series = true;
-                        } else if !chars[i - 1].is_alphabetic() {
+                        if i == 0 || !chars[i - 1].is_alphabetic() {
                             is_number_series = true;
                         }
                     }
@@ -209,12 +206,7 @@ impl FrenchFormatter {
                             if current == ' ' {
                                 // Assumne that if it isn't a normal space it
                                 // was used here for good reason, don't replace it
-                                if found_opening_quote {
-                                    // not the end of a dialogue
-                                    chars[i] = nb_char;
-                                } else {
-                                    chars[i] = nb_char;
-                                }
+                                chars[i] = nb_char;
                             }
                         }
                         _ => (),
@@ -241,19 +233,15 @@ impl FrenchFormatter {
                                         }
                                     }
                                     '«' => {
-                                        found_opening_quote = true;
                                         if i <= 1 {
                                             nb_char
                                         } else {
                                             let j = find_next(&chars, '»', i);
                                             if let Some(j) = j {
                                                 if chars[j - 1].is_whitespace() {
-                                                    if j >= chars.len() - 1 {
-                                                        // » is at the end, assume it is a dialogue
-                                                        chars[j - 1] = nb_char;
-                                                        nb_char
-                                                    } else if j - i > self.threshold_quote {
-                                                        // It's a quote, so use large space?
+                                                    if j >= chars.len() - 1 || j - 1 > self.threshold_quote {
+                                                        // Either '»' is at the end, assume it is a dialogue
+                                                        // or it's a quote, so large space
                                                         chars[j - 1] = nb_char;
                                                         nb_char
                                                     } else {
@@ -343,9 +331,7 @@ impl FrenchFormatter {
                     if !is_next_char_uppercase(v, j + 1) {
                         continue;
                     } else if let Some(c) = word.chars().next() {
-                        if !c.is_uppercase() {
-                            return None;
-                        } else if word.len() > self.threshold_real_word {
+                        if !c.is_uppercase() || word.len() > self.threshold_real_word {
                             return None;
                         }
                     }

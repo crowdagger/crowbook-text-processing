@@ -2,10 +2,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with
 // this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use common::{NB_CHAR, NB_CHAR_NARROW, NB_CHAR_EM};
-
 use std::borrow::Cow;
+
 use regex::Regex;
+
+use common::{NB_CHAR, NB_CHAR_NARROW, NB_CHAR_EM};
 
 /// Escape non breaking spaces for HTML, so there is no problem for
 /// displaying them if the font or browser doesn't know what to do
@@ -55,9 +56,7 @@ pub fn escape_nb_spaces_tex<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str>
         let mut output = chars.into_iter().collect::<String>();
         for c in rest {
             match c {
-                NB_CHAR_NARROW => output.push('~'),
-                NB_CHAR_EM => output.push('~'),
-                NB_CHAR => output.push('~'),
+                NB_CHAR_NARROW | NB_CHAR_EM | NB_CHAR => output.push('~'),
                 _ => output.push(c),
             }
         }
