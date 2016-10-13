@@ -1,5 +1,7 @@
 # crowbook-text-processing
 
+[![Travis status](https://img.shields.io/travis/lise-henry/crowbook-text-processing.svg)](https://travis-ci.org/lise-henry/crowbook-text-processing)
+
 Some text processing functions initially written
 for [Crowbook](https://github.com/lise-henry/crowbook) and moved in a
 separate library (and a more permissive license) so they can be used in other projects.
