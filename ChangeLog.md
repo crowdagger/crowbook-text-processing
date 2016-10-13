@@ -3,8 +3,16 @@ ChangeLog
 
 unreleased
 ------------
-* Added a `.travis.yml` file.
+* Now use Travis for continuous integration.
 * Found & documented rustc minimal version to build this lib (1.6.0)
+* Ran `rustfmt` on the library.
+* Some functions or structs are now reexported so they can be accessed
+  more easily: 
+    * `FrenchFormatter`,
+    * `escape_html`,
+	* `escape_tex`,
+	* `remove_whitespaces`.
+	
 
 0.1.2 (2016-10-12)
 ----------------------
