@@ -5,7 +5,7 @@ unreleased
 ------------
 * Now use Travis for continuous integration.
 * Found & documented rustc minimal version to build this lib (1.6.0)
-* Ran `rustfmt` on the library.
+* `FrenchFormatter` now implements the `Default` and `Debug` traits.
 * Some functions or structs are now reexported so they can be accessed
   more easily: 
     * `FrenchFormatter`,
