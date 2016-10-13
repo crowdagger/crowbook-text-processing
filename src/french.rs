@@ -219,18 +219,16 @@ impl FrenchFormatter {
                                     '—' | '-' | '–' => {
                                         if i <= 1 {
                                             nb_char_em
+                                        } else if chars[i - 1] == nb_char {
+                                            // non breaking space before, so probably
+                                            // should have a breakable one after
+                                            ' '
                                         } else {
-                                            if chars[i - 1] == nb_char {
-                                                // non breaking space before, so probably
-                                                // should have a breakable one after
-                                                ' '
-                                            } else {
-                                                if let Some(closing) =
-                                                       self.find_closing_dash(&chars, i + 1) {
+                                            if let Some(closing) =
+                                                self.find_closing_dash(&chars, i + 1) {
                                                     chars[closing] = nb_char;
                                                 }
-                                                nb_char
-                                            }
+                                            nb_char
                                         }
                                     }
                                     '«' => {
@@ -245,17 +243,15 @@ impl FrenchFormatter {
                                                         // » is at the end, assume it is a dialogue
                                                         chars[j - 1] = nb_char;
                                                         nb_char
+                                                    } else if j - i > self.threshold_quote {
+                                                        // It's a quote, so use large space?
+                                                        chars[j - 1] = nb_char;
+                                                        nb_char
                                                     } else {
-                                                        if j - i > self.threshold_quote {
-                                                            // It's a quote, so use large space?
-                                                            chars[j - 1] = nb_char;
-                                                            nb_char
-                                                        } else {
-                                                            // Not long enough to be a quote,
-                                                            // use narrow nb char
-                                                            chars[j - 1] = nb_char_narrow;
-                                                            nb_char_narrow
-                                                        }
+                                                        // Not long enough to be a quote,
+                                                        // use narrow nb char
+                                                        chars[j - 1] = nb_char_narrow;
+                                                        nb_char_narrow
                                                     }
                                                 } else {
                                                     // wtf formatting?
