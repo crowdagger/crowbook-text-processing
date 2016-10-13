@@ -333,15 +333,11 @@ impl FrenchFormatter {
                 '.' => {
                     if !is_next_char_uppercase(v, j + 1) {
                         continue;
-                    } else {
-                        if let Some(c) = word.chars().next() {
-                            if !c.is_uppercase() {
-                                return None;
-                            } else {
-                                if word.len() > self.threshold_real_word {
-                                    return None;
-                                }
-                            }
+                    } else if let Some(c) = word.chars().next() {
+                        if !c.is_uppercase() {
+                            return None;
+                        } else if word.len() > self.threshold_real_word {
+                            return None;
                         }
                     }
                 }
@@ -349,7 +345,7 @@ impl FrenchFormatter {
                 c => word.push(c),
             }
         }
-        return None;
+        None
     }
 }
 
