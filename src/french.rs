@@ -10,7 +10,7 @@ use std::borrow::Cow;
 /// Output format, to determine how to escape characters
 enum Output {
     Default,
-    Latex
+    Latex,
 }
 
 
@@ -80,7 +80,7 @@ impl FrenchFormatter {
         self.threshold_quote = t;
         self
     }
-    
+
     /// Sets the threshold for real word.
     ///
     /// After that number of characters, assume it's not an abbreviation
@@ -98,17 +98,19 @@ impl FrenchFormatter {
     /// This method should be called for each paragraph, as it makes some suppositions that
     /// the beginning of the string also means the beginning of a line.
     ///
-    /// This method calls `remove_whitespaces` internally, as it relies on it. 
+    /// This method calls `remove_whitespaces` internally, as it relies on it.
     ///
     /// # Example
     ///
     /// ```
     /// use crowbook_text_processing::french::FrenchFormatter;
     /// let f = FrenchFormatter::new();
-    /// let s = f.format("« Est-ce bien formaté ? » se demandait-elle — les espaces insécables étaient tellement compliquées à gérer, dans cette langue !");
+    /// let s = f.format("« Est-ce bien formaté ? » se demandait-elle — les espaces \
+    ///                   insécables étaient tellement compliquées à gérer,
+    ///                   dans cette langue !");
     /// println!("{}", s);
     /// ```
-    pub fn format<'a, S:Into<Cow<'a, str>>>(&self, input: S) -> Cow<'a, str> {
+    pub fn format<'a, S: Into<Cow<'a, str>>>(&self, input: S) -> Cow<'a, str> {
         self.format_output(input, Output::Default)
     }
 
@@ -123,14 +125,14 @@ impl FrenchFormatter {
     /// let s = f.format_tex("« Est-ce bien formaté ? »");
     /// assert_eq!(&s, "«~Est-ce bien formaté~?~»");
     /// ```
-    pub fn format_tex<'a, S:Into<Cow<'a, str>>>(&self, input: S) -> Cow<'a, str> {
+    pub fn format_tex<'a, S: Into<Cow<'a, str>>>(&self, input: S) -> Cow<'a, str> {
         self.format_output(input, Output::Latex)
     }
 
 
     /// (Try to) Format a string according to french typographic rules, and escaping non-breaking
     /// spaces according to output format
-    fn format_output<'a, S:Into<Cow<'a, str>>>(&self, input: S, output: Output) -> Cow<'a, str> {
+    fn format_output<'a, S: Into<Cow<'a, str>>>(&self, input: S, output: Output) -> Cow<'a, str> {
         let input = remove_whitespaces(input); // first pass to remove whitespaces
 
         // Find first characters that are trouble
@@ -144,7 +146,7 @@ impl FrenchFormatter {
 
         let (nb_char, nb_char_em, nb_char_narrow) = match output {
             Output::Default => (NB_CHAR, NB_CHAR_EM, NB_CHAR_NARROW),
-            Output::Latex => ('~', '~', '~')
+            Output::Latex => ('~', '~', '~'),
         };
 
         let mut found_opening_quote = false; // we didn't find an opening quote yet
@@ -154,29 +156,30 @@ impl FrenchFormatter {
         // Handle numbers
         if let Some(first) = first_number {
             // Go back one step
-            let first = if first > 1 {
-                first - 1
-            } else {
-                0
-            };
-            for i in first..(chars.len()-1) {
+            let first = if first > 1 { first - 1 } else { 0 };
+            for i in first..(chars.len() - 1) {
                 // Handle numbers (that's easy)
                 let current = chars[i];
-                let next = chars[i+1];
+                let next = chars[i + 1];
 
                 match current {
-                    '0'...'9' => if i == 0 {
-                        is_number_series = true;
-                    } else if !chars[i-1].is_alphabetic() {
-                        is_number_series = true;
-                    },
+                    '0'...'9' => {
+                        if i == 0 {
+                            is_number_series = true;
+                        } else if !chars[i - 1].is_alphabetic() {
+                            is_number_series = true;
+                        }
+                    }
                     c if c.is_whitespace() => {
-                        if is_number_series && (next.is_digit(10) || self.char_is_symbol(&chars, i+1)) {
+                        if is_number_series &&
+                           (next.is_digit(10) || self.char_is_symbol(&chars, i + 1)) {
                             // Next char is a number or symbol such as $, and previous was number
                             chars[i] = nb_char_narrow;
                         }
-                    },
-                    _ => { is_number_series = false; }
+                    }
+                    _ => {
+                        is_number_series = false;
+                    }
                 }
             }
         }
@@ -184,28 +187,27 @@ impl FrenchFormatter {
         // Handle the rest
         if let Some(first) = first {
             // Go back one step
-            let first = if first > 1 {
-                first - 1
-            } else {
-                0
-            };
-            for i in first..(chars.len()-1) {
+            let first = if first > 1 { first - 1 } else { 0 };
+            for i in first..(chars.len() - 1) {
                 let current = chars[i];
-                let next = chars[i+1];
+                let next = chars[i + 1];
                 if is_whitespace(current) {
                     match next {
                         // handle narrow nb space before char
                         '?' | '!' | ';' => chars[i] = nb_char_narrow,
                         ':' => chars[i] = nb_char,
-                        '»' => if current == ' ' {
-                            // Assumne that if it isn't a normal space it was used here for good reason, don't replace it
-                            if found_opening_quote {
-                                // not the end of a dialogue
-                                chars[i] = nb_char;
-                            } else {
-                                chars[i] = nb_char;
+                        '»' => {
+                            if current == ' ' {
+                                // Assumne that if it isn't a normal space it
+                                // was used here for good reason, don't replace it
+                                if found_opening_quote {
+                                    // not the end of a dialogue
+                                    chars[i] = nb_char;
+                                } else {
+                                    chars[i] = nb_char;
+                                }
                             }
-                        },
+                        }
                         _ => (),
                     }
                 } else {
@@ -218,17 +220,19 @@ impl FrenchFormatter {
                                         if i <= 1 {
                                             nb_char_em
                                         } else {
-                                            if chars[i-1] == nb_char {
-                                                // non breaking space before, so probably should have a breakable one after
+                                            if chars[i - 1] == nb_char {
+                                                // non breaking space before, so probably
+                                                // should have a breakable one after
                                                 ' '
                                             } else {
-                                                if let Some(closing) = self.find_closing_dash(&chars, i+1) {
+                                                if let Some(closing) =
+                                                       self.find_closing_dash(&chars, i + 1) {
                                                     chars[closing] = nb_char;
                                                 }
                                                 nb_char
                                             }
                                         }
-                                    },
+                                    }
                                     '«' => {
                                         found_opening_quote = true;
                                         if i <= 1 {
@@ -236,35 +240,36 @@ impl FrenchFormatter {
                                         } else {
                                             let j = find_next(&chars, '»', i);
                                             if let Some(j) = j {
-                                            if chars[j-1].is_whitespace() {
-                                                if j >= chars.len() - 1 {
-                                                    // » is at the end, assume it is a dialogue
-                                                    chars[j-1] = nb_char;
-                                                    nb_char
-                                                } else {
-                                                    if j - i > self.threshold_quote {
-                                                        // It's a quote, so use large space?
-                                                        chars[j-1] = nb_char;
+                                                if chars[j - 1].is_whitespace() {
+                                                    if j >= chars.len() - 1 {
+                                                        // » is at the end, assume it is a dialogue
+                                                        chars[j - 1] = nb_char;
                                                         nb_char
                                                     } else {
-                                                        // Not long enough to be a quote, use narrow nb char
-                                                        chars[j-1] = nb_char_narrow;
-                                                        nb_char_narrow
+                                                        if j - i > self.threshold_quote {
+                                                            // It's a quote, so use large space?
+                                                            chars[j - 1] = nb_char;
+                                                            nb_char
+                                                        } else {
+                                                            // Not long enough to be a quote,
+                                                            // use narrow nb char
+                                                            chars[j - 1] = nb_char_narrow;
+                                                            nb_char_narrow
+                                                        }
                                                     }
+                                                } else {
+                                                    // wtf formatting?
+                                                    nb_char
                                                 }
                                             } else {
-                                                // wtf formatting?
-                                                nb_char
-                                            }
-                                        } else {
                                                 // No ending quote found, assume is a dialogue
                                                 nb_char
                                             }
                                         }
-                                    }, // TODO: better heuristic: use narrow nb_char if not at front???
+                                    } // TODO: better heuristic: use narrow nb_char if not at front?
                                     _ => unreachable!(),
                                 };
-                                chars[i+1] = replacing_char;
+                                chars[i + 1] = replacing_char;
                             }
                         }
                         _ => (),
@@ -275,10 +280,11 @@ impl FrenchFormatter {
         Cow::Owned(chars.into_iter().collect())
     }
 
-    /// Return true if the character is a symbol that is used after number and should have a nb_char before
+    /// Return true if the character is a symbol that is used after number
+    /// and should have a nb_char before
     fn char_is_symbol(&self, v: &[char], i: usize) -> bool {
         let is_next_letter = if i < v.len() - 1 {
-            v[i+1].is_alphabetic()
+            v[i + 1].is_alphabetic()
         } else {
             false
         };
@@ -291,16 +297,17 @@ impl FrenchFormatter {
                         // not a currency
                         false
                     } else {
-                        // if all uppercase and less than THRESHOLD, assume it's a currency or a unit
+                        // if all uppercase and less than THRESHOLD,
+                        // assume it's a currency or a unit
                         word.iter().all(|c| c.is_uppercase())
                     }
-                },
+                }
                 c if c.is_alphabetic() => {
                     let word = get_next_word(v, i);
                     // if two letters, assume it is a unit
                     word.len() <= self.threshold_unit
-                },
-                _ => false
+                }
+                _ => false,
             }
         } else {
             match v[i] {
@@ -311,30 +318,37 @@ impl FrenchFormatter {
         }
     }
 
-    // Return true(some) if a closing dash was found before what looks like the end of a sentence, None else
+    // Return Some(pos) if a closing dash was found before what looks
+    // like the end of a sentence, None else
     fn find_closing_dash(&self, v: &[char], n: usize) -> Option<usize> {
         let mut word = String::new();
         for j in n..v.len() {
             match v[j] {
-                '!' | '?' => if is_next_char_uppercase(v, j+1) {
-                    return None;
-                },
-                '-' | '–' | '—' => if v[j-1].is_whitespace() {
-                    return Some(j-1);
-                },
-                '.' => if !is_next_char_uppercase(v, j+1) {
-                    continue;
-                } else {
-                    if let Some(c) = word.chars().next() {
-                        if !c.is_uppercase() {
-                            return None;
-                        } else {
-                            if word.len() > self.threshold_real_word {
+                '!' | '?' => {
+                    if is_next_char_uppercase(v, j + 1) {
+                        return None;
+                    }
+                }
+                '-' | '–' | '—' => {
+                    if v[j - 1].is_whitespace() {
+                        return Some(j - 1);
+                    }
+                }
+                '.' => {
+                    if !is_next_char_uppercase(v, j + 1) {
+                        continue;
+                    } else {
+                        if let Some(c) = word.chars().next() {
+                            if !c.is_uppercase() {
                                 return None;
+                            } else {
+                                if word.len() > self.threshold_real_word {
+                                    return None;
+                                }
                             }
                         }
-                    } 
-                },
+                    }
+                }
                 c if c.is_whitespace() => word = String::new(),
                 c => word.push(c),
             }
@@ -345,8 +359,8 @@ impl FrenchFormatter {
 
 fn is_trouble(c: char) -> bool {
     match c {
-        '?'|'!'|';'|':'|'»'|'«'|'—'|'–' => true,
-        _ => false
+        '?' | '!' | ';' | ':' | '»' | '«' | '—' | '–' => true,
+        _ => false,
     }
 }
 
@@ -355,15 +369,15 @@ fn is_trouble(c: char) -> bool {
 // Find first char `c` in slice `v` after index `n`
 fn find_next(v: &[char], c: char, n: usize) -> Option<usize> {
     for i in n..v.len() {
-        if v[i] == c  {
+        if v[i] == c {
             return Some(i);
-        } 
+        }
     }
     None
 }
 
 // Return true if next non whitespace char in `v` after index `n` is uppercase
-fn is_next_char_uppercase(v: &[char], n: usize)-> bool {
+fn is_next_char_uppercase(v: &[char], n: usize) -> bool {
     for i in n..v.len() {
         if v[i].is_whitespace() {
             continue;
@@ -393,7 +407,7 @@ fn get_next_word(v: &[char], n: usize) -> &[char] {
 
     for i in beginning..v.len() {
         if v[i].is_whitespace() {
-            end = i-1;
+            end = i - 1;
             break;
         }
     }
@@ -405,29 +419,40 @@ fn get_next_word(v: &[char], n: usize) -> &[char] {
 #[cfg(test)]
 #[test]
 fn french() {
-    let s = "  «  Comment allez-vous ? » demanda-t-elle à son   interlocutrice  qui lui répondit  : « Mais très bien ma chère  !  »";
+    let s = "  «  Comment allez-vous ? » demanda-t-elle à son   \
+             interlocutrice  qui lui répondit  \
+             : « Mais très bien ma chère  !  »";
     let res = FrenchFormatter::new().format(s);
-    assert_eq!(&res, " « Comment allez-vous ? » demanda-t-elle à son interlocutrice qui lui répondit : « Mais très bien ma chère ! »");
+    assert_eq!(&res,
+               " « Comment allez-vous ? » demanda-t-elle à son \
+                interlocutrice qui lui répondit : \
+                « Mais très bien ma chère ! »");
 }
 
 #[test]
 fn french_dashes_1() {
-    let s = "Il faudrait gérer ces tirets – sans ça certains textes rendent mal – un jour ou l'autre";
+    let s = "Il faudrait gérer ces tirets – sans ça certains textes rendent mal – un jour ou \
+             l'autre";
     let res = FrenchFormatter::new().format_tex(s);
-    assert_eq!(&res, "Il faudrait gérer ces tirets –~sans ça certains textes rendent mal~– un jour ou l'autre");
+    assert_eq!(&res,
+               "Il faudrait gérer ces tirets –~sans ça certains textes \
+                rendent mal~– un jour ou l'autre");
 }
 
 #[test]
 fn french_dashes_2() {
-    let s = "Il faudrait gérer ces tirets – sans ça certains textes rendent mal. Mais ce n'est pas si simple – si ?";
+    let s = "Il faudrait gérer ces tirets – sans ça certains textes rendent mal. Mais ce n'est \
+             pas si simple – si ?";
     let res = FrenchFormatter::new().format_tex(s);
-    assert_eq!(&res, "Il faudrait gérer ces tirets –~sans ça certains textes rendent mal. Mais ce n'est pas si simple –~si~?");
+    assert_eq!(&res,
+               "Il faudrait gérer ces tirets –~sans ça certains textes rendent mal. Mais ce \
+                n'est pas si simple –~si~?");
 }
 
 #[test]
 fn french_numbers() {
     let french = FrenchFormatter::new();
-    
+
     let s = Cow::Borrowed("10 000");
     let res = french.format_tex(s);
     assert_eq!(&res, "10~000");
@@ -435,7 +460,7 @@ fn french_numbers() {
     let s = Cow::Borrowed("10 000 €");
     let res = french.format_tex(s);
     assert_eq!(&res, "10~000~€");
-    
+
     let s = Cow::Borrowed("10 000 euros");
     let res = french.format_tex(s);
     assert_eq!(&res, "10~000 euros");
@@ -464,4 +489,3 @@ fn french_numbers() {
     let res = french.format_tex(s);
     assert_eq!(&res, "20 BALLES");
 }
-

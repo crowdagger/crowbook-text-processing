@@ -1,6 +1,6 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with
-// this file, You can obtain one at https://mozilla.org/MPL/2.0/.  
+// this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use common::is_whitespace;
 
@@ -30,7 +30,7 @@ pub fn remove_whitespaces<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
             if is_whitespace(c) {
                 if previous_space {
                     // previous char already a space, don't copy it
-                    } else {
+                } else {
                     new_s.push(c);
                     previous_space = true;
                 }

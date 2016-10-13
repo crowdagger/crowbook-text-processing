@@ -7,21 +7,22 @@ use common::{NB_CHAR, NB_CHAR_NARROW, NB_CHAR_EM};
 use std::borrow::Cow;
 use regex::Regex;
 
-/// Escape non breaking spaces for HTML, so there is no problem for displaying them if the font or browser
-/// doesn't know what to do with them (particularly the narrow non breaking space which isn't very
-/// well supported.
+/// Escape non breaking spaces for HTML, so there is no problem for
+/// displaying them if the font or browser doesn't know what to do
+/// with them (particularly the narrow non breaking space which isn't
+/// very well supported).
 pub fn escape_nb_spaces<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
     let input = input.into();
     if let Some(first) = input.chars().position(|c| match c {
         NB_CHAR | NB_CHAR_NARROW | NB_CHAR_EM => true,
-        _ => false
+        _ => false,
     }) {
         let mut chars = input.chars().collect::<Vec<_>>();
         let rest = chars.split_off(first);
         let mut output = chars.into_iter().collect::<String>();
         for c in rest {
             match c {
-                NB_CHAR_NARROW  => output.push_str(r#"<span class = "nnbsp">&#8201;</span>"#),
+                NB_CHAR_NARROW => output.push_str(r#"<span class = "nnbsp">&#8201;</span>"#),
                 NB_CHAR_EM => output.push_str(r#"<span class = "ensp">&#8194;</span>"#),
                 NB_CHAR => output.push_str(r#"<span class = "nbsp">&#160;</span>"#),
                 _ => output.push(c),
@@ -47,14 +48,14 @@ pub fn escape_nb_spaces_tex<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str>
     let input = input.into();
     if let Some(first) = input.chars().position(|c| match c {
         NB_CHAR | NB_CHAR_NARROW | NB_CHAR_EM => true,
-        _ => false
+        _ => false,
     }) {
         let mut chars = input.chars().collect::<Vec<_>>();
         let rest = chars.split_off(first);
         let mut output = chars.into_iter().collect::<String>();
         for c in rest {
             match c {
-                NB_CHAR_NARROW  => output.push('~'),
+                NB_CHAR_NARROW => output.push('~'),
                 NB_CHAR_EM => output.push('~'),
                 NB_CHAR => output.push('~'),
                 _ => output.push(c),
@@ -81,14 +82,14 @@ pub fn escape_nb_spaces_tex<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str>
 /// assert_eq!(&s, "&lt;foo&gt; &amp; &lt;bar&gt;");
 /// ```
 pub fn escape_html<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
-        lazy_static! {
+    lazy_static! {
         static ref REGEX: Regex = Regex::new("[<>&]").unwrap();
     }
     let input = input.into();
     let first = REGEX.find(&input);
     if let Some((first, _)) = first {
         let len = input.len();
-        let mut output = Vec::with_capacity(len + len /2);
+        let mut output = Vec::with_capacity(len + len / 2);
         output.extend_from_slice(input[0..first].as_bytes());
         let rest = input[first..].bytes();
         for c in rest {
@@ -115,7 +116,7 @@ pub fn escape_quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
         for c in input.chars() {
             match c {
                 '"' => output.push('\''),
-                _ => output.push(c)
+                _ => output.push(c),
             }
         }
         Cow::Owned(output)
@@ -136,30 +137,31 @@ pub fn escape_quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
 /// ```
 pub fn escape_tex<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
     let input = input.into();
-    const REGEX_LITERAL:&'static str = r"[&%$#_\x7E\x2D\{\}\^\\]";
+    const REGEX_LITERAL: &'static str = r"[&%$#_\x7E\x2D\{\}\^\\]";
     lazy_static! {
        static ref REGEX: Regex = Regex::new(REGEX_LITERAL).unwrap();
-        
     }
+
     let first = REGEX.find(&input);
     if let Some((first, _)) = first {
         let len = input.len();
-        let mut output = Vec::with_capacity(len + len/2);
+        let mut output = Vec::with_capacity(len + len / 2);
         output.extend_from_slice(input[0..first].as_bytes());
-        let mut bytes:Vec<_> = input[first..].bytes().collect();
+        let mut bytes: Vec<_> = input[first..].bytes().collect();
         bytes.push(b' '); // add a dummy char for call to .windows()
         // for &[c, next] in chars.windows(2) { // still experimental, uncomment when stable
-        for win in bytes.windows(2) { 
+        for win in bytes.windows(2) {
             let c = win[0];
             let next = win[1];
             match c {
                 b'-' => {
                     if next == b'-' {
-                        output.extend_from_slice(br"-{}"); // if next char is also a -, to avoid tex ligatures
+                        // if next char is also a -, to avoid tex ligatures
+                        output.extend_from_slice(br"-{}");
                     } else {
                         output.push(c);
                     }
-                },
+                }
                 b'&' => output.extend_from_slice(br"\&"),
                 b'%' => output.extend_from_slice(br"\%"),
                 b'$' => output.extend_from_slice(br"\$"),
@@ -167,10 +169,10 @@ pub fn escape_tex<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
                 b'_' => output.extend_from_slice(br"\_"),
                 b'{' => output.extend_from_slice(br"\{"),
                 b'}' => output.extend_from_slice(br"\}"),
-                b'~' => output.extend_from_slice(br"\textasciitilde{}" ),
+                b'~' => output.extend_from_slice(br"\textasciitilde{}"),
                 b'^' => output.extend_from_slice(br"\textasciicircum{}"),
                 b'\\' => output.extend_from_slice(br"\textbackslash{}"),
-                _  => output.push(c)
+                _ => output.push(c),
             }
         }
         Cow::Owned(String::from_utf8(output).unwrap())
@@ -261,6 +263,7 @@ fn quotes_escape() {
 #[test]
 fn nb_spaces_escape() {
     let actual = escape_nb_spaces("This contains non breaking spaces");
-    let expected = r#"This<span class = "nbsp">&#160;</span>contains<span class = "nnbsp">&#8201;</span>non breaking spaces"#;
+    let expected = "This<span class = \"nbsp\">&#160;</span>contains\
+                    <span class = \"nnbsp\">&#8201;</span>non breaking spaces";
     assert_eq!(&actual, expected);
 }
