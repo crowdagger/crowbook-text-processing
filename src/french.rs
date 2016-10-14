@@ -420,6 +420,30 @@ fn french() {
 }
 
 #[test]
+fn french_quotes_1() {
+    let s = "« Un test »";
+    let res = FrenchFormatter::new().format_tex(s);
+    assert_eq!(&res,
+               "«~Un test~»");
+}
+
+#[test]
+fn french_quotes_2() {
+    let s = "« Un test";
+    let res = FrenchFormatter::new().format_tex(s);
+    assert_eq!(&res,
+               "«~Un test");
+}
+
+#[test]
+fn french_quotes_3() {
+    let s = "Un test »";
+    let res = FrenchFormatter::new().format_tex(s);
+    assert_eq!(&res,
+               "Un test~»");
+}
+
+#[test]
 fn french_dashes_1() {
     let s = "Il faudrait gérer ces tirets – sans ça certains textes rendent mal – un jour ou \
              l'autre";
