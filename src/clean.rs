@@ -47,6 +47,10 @@ pub fn remove_whitespaces<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
 
 /// Replace quotes with more typographic variants
 ///
+/// While it should work pretty well for double quotes (`"`), the rules for single
+/// quote (`'`) are more ambiguous, as it can be a quote, or an apostrophe and it's not
+/// that easy to get right.
+///
 /// # Example
 ///
 /// ```
@@ -57,6 +61,14 @@ pub fn remove_whitespaces<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
 /// assert_eq!(&s, "‘foo’");
 /// ```
 pub fn typographic_quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
+    /// Custom whitespace-detection function, including `,`, `;`, `.`, `!`, `?`, and `:`
+    fn is_whitespace(c: char) -> bool {
+        match c {
+            ',' | '.' | ';' | '!' | '?' | ':' => true,
+            _ => c.is_whitespace()
+        }
+    }
+    
     lazy_static! {
         static ref REGEX: Regex = Regex::new("[\"\']").unwrap();
     }
@@ -71,26 +83,85 @@ pub fn typographic_quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
         }
         new_s.push_str(&input[0..first]);
         let chars = input[first..].chars().collect::<Vec<_>>();
+        let mut has_opened_quote = false;
         for i in 0..chars.len() {
             let c = chars[i];
             match c {
                 '"' => {
-                    if i > 0 && chars[i - 1].is_alphabetic() {
+                    if i > 0 && !is_whitespace(chars[i - 1]) {
                         new_s.push('”');
-                    } else if i < chars.len() - 1 && chars[i + 1].is_alphabetic() {
+                    } else if i < chars.len() - 1 && !is_whitespace(chars[i + 1]) {
                         new_s.push('“');
                     } else {
                         new_s.push('"');
                     }
                 },
                 '\'' => {
-                    if i > 0 && chars[i - 1].is_alphabetic() {
-                        new_s.push('’');
-                    } else if i < chars.len() - 1 && chars[i + 1].is_alphabetic() {
-                        new_s.push('‘');
+                    let prev = if i > 0 {
+                        Some(!is_whitespace(chars[i - 1]))
                     } else {
-                        new_s.push('\'');
-                    }
+                        None
+                    };
+                    let next = if i < chars.len() - 1 {
+                        Some(!is_whitespace(chars[i + 1]))
+                    } else {
+                        None
+                    };
+                    let replacement = match (prev, next) {
+                        // Elision, it's closing
+                        (Some(true), Some(true)) => '’',
+
+                        // Beginning of word, it's opening (not always though)
+                        (Some(false), Some(true))
+                            | (None, Some(true))
+                            => {
+                                let mut is_next_closing = false;
+                                for j in (i + 1)..chars.len() {
+                                    if chars[j] == '\'' {
+                                        println!("match at {}", j);
+                                        if chars[j-1].is_whitespace() {
+                                            println!("prev is whitespace, not closing quote");
+                                            continue;
+                                        } else {
+                                            if j >= chars.len() - 1
+                                                || is_whitespace(chars[j+1])
+                                                || chars[j+1] == '"' {
+                                                    is_next_closing = true;
+                                                    break;
+                                                }
+                                            else {
+                                                println!("j: {}, len: {}", j, chars.len());
+                                            }
+                                        }
+                                    }
+                                }
+                                println!("is_next_closing: {}", is_next_closing);
+                                if is_next_closing && !has_opened_quote {
+                                    has_opened_quote = true;
+                                    '‘'
+                                } else {
+                                    '’'
+                                }
+                            }
+
+                        // Apostrophe at end of word, it's closing
+                        (Some(true), Some(false))
+                            | (Some(true), None)
+                            => {
+                                has_opened_quote = false;
+                                '’'
+                            }, 
+                        
+                        _ => '\'',
+                    };
+                    new_s.push(replacement);
+                    // if i > 0 && !chars[i - 1].is_whitespace() {
+                    //     new_s.push('’');
+                    // } else if i < chars.len() - 1 && !chars[i + 1].is_whitespace() {
+                    //     new_s.push('‘');
+                    // } else {
+                    //     new_s.push('\'');
+                    // }
                 },
                 _ => new_s.push(c)
             }
@@ -134,4 +205,28 @@ fn typographic_quotes_3() {
 fn typographic_quotes_4() {
     let s = typographic_quotes("some char: 'c', '4', '&'");
     assert_eq!(&s, "some char: ‘c’, ‘4’, ‘&’");
+}
+
+#[test]
+fn typographic_quotes_5() {
+    let s = typographic_quotes("It's a good day to say 'hi'");
+    assert_eq!(&s, "It’s a good day to say ‘hi’");
+}
+
+#[test]
+fn typographic_quotes_6() {
+    let s = typographic_quotes("The '60s were nice, weren't they?");
+    assert_eq!(&s, "The ’60s were nice, weren’t they?");
+}
+
+#[test]
+fn typographic_quotes_7() {
+    let s = typographic_quotes("Plurals' possessive");
+    assert_eq!(&s, "Plurals’ possessive");
+}
+
+#[test]
+fn typographic_quotes_8() {
+    let s = typographic_quotes("\"I like 'That '70s show'\", she said");
+    assert_eq!(&s, "“I like ‘That ’70s show’”, she said");
 }
