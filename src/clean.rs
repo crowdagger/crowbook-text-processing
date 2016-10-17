@@ -64,7 +64,8 @@ pub fn typographic_quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
     /// Custom whitespace-detection function, including `,`, `;`, `.`, `!`, `?`, and `:`
     fn is_whitespace(c: char) -> bool {
         match c {
-            ',' | '.' | ';' | '!' | '?' | ':' => true,
+            ',' | '.' | ';' | '!' | '?' | ':' | '"'
+                | '(' | ')' => true,
             _ => c.is_whitespace()
         }
     }
@@ -83,14 +84,19 @@ pub fn typographic_quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
         }
         new_s.push_str(&input[0..first]);
         let chars = input[first..].chars().collect::<Vec<_>>();
-        let mut has_opened_quote = false;
+        let mut closing_quote = None;
         for i in 0..chars.len() {
             let c = chars[i];
+            let has_opened_quote = if let Some(n) = closing_quote {
+                i <= n
+            } else {
+                false
+            };
             match c {
                 '"' => {
-                    if i > 0 && !is_whitespace(chars[i - 1]) {
+                    if i > 0 && !chars[i-1].is_whitespace() {
                         new_s.push('”');
-                    } else if i < chars.len() - 1 && !is_whitespace(chars[i + 1]) {
+                    } else if i < chars.len() - 1 && !is_whitespace(chars[i+1]) {
                         new_s.push('“');
                     } else {
                         new_s.push('"');
@@ -98,12 +104,12 @@ pub fn typographic_quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
                 },
                 '\'' => {
                     let prev = if i > 0 {
-                        Some(!is_whitespace(chars[i - 1]))
+                        Some(!chars[i - 1].is_whitespace())
                     } else {
                         None
                     };
                     let next = if i < chars.len() - 1 {
-                        Some(!is_whitespace(chars[i + 1]))
+                        Some(!chars[i+1].is_whitespace())
                     } else {
                         None
                     };
@@ -118,26 +124,19 @@ pub fn typographic_quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
                                 let mut is_next_closing = false;
                                 for j in (i + 1)..chars.len() {
                                     if chars[j] == '\'' {
-                                        println!("match at {}", j);
                                         if chars[j-1].is_whitespace() {
-                                            println!("prev is whitespace, not closing quote");
                                             continue;
                                         } else {
                                             if j >= chars.len() - 1
-                                                || is_whitespace(chars[j+1])
-                                                || chars[j+1] == '"' {
+                                                || is_whitespace(chars[j+1]) {
                                                     is_next_closing = true;
+                                                    closing_quote = Some(j);
                                                     break;
                                                 }
-                                            else {
-                                                println!("j: {}, len: {}", j, chars.len());
-                                            }
                                         }
                                     }
                                 }
-                                println!("is_next_closing: {}", is_next_closing);
                                 if is_next_closing && !has_opened_quote {
-                                    has_opened_quote = true;
                                     '‘'
                                 } else {
                                     '’'
@@ -148,7 +147,6 @@ pub fn typographic_quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
                         (Some(true), Some(false))
                             | (Some(true), None)
                             => {
-                                has_opened_quote = false;
                                 '’'
                             }, 
                         
@@ -229,4 +227,11 @@ fn typographic_quotes_7() {
 fn typographic_quotes_8() {
     let s = typographic_quotes("\"I like 'That '70s show'\", she said");
     assert_eq!(&s, "“I like ‘That ’70s show’”, she said");
+}
+
+
+#[test]
+fn typographic_quotes_9() {
+    let s = typographic_quotes("some char: '!', '?', ','");
+    assert_eq!(&s, "some char: ‘!’, ‘?’, ‘,’");
 }
