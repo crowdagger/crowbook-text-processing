@@ -17,6 +17,7 @@ use crowbook_text_processing::{
     escape_html,
     escape_tex,
     remove_whitespaces,
+    typographic_quotes,
 };
 
 let s = " Some  string with  too much   whitespaces & around 1% \
@@ -28,6 +29,12 @@ println!("for HTML: {}", escape_html(new_s.clone()));
 // Display to LaTeX
 println!("for LaTeX: {}", escape_tex(new_s));
 
+// Replace quotes with typographic quotation marks
+let s = r#"Some "quoted string" and 'another one'."#;
+let new_s = typographic_quotes(s);
+println!("for HTML: {}", escape_html(new_s));
+
+
 // Format whitespaces according to french typographic rules, using
 // the appropriate non-breaking spaces where needed
 let s = " Une chaîne en français ! On voudrait un résultat \
@@ -36,7 +43,6 @@ let french = FrenchFormatter::new();
 println!("for text: {}", french.format(s));
 println!("for LaTeX: {}", escape_tex(french.format_tex(s)));
 ```
-
 ## Requirements
 
 * `rustc >= 1.6.0`

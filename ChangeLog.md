@@ -1,6 +1,12 @@
 ChangeLog
 ==========
 
+0.1.4 (2016-10-17)
+---------------------
+* Added `typographic_quotes` function.
+* Made`FrenchFormatter` use it by default (can be disabled by setting 
+  `typographic_quotes` to false).
+
 0.1.3 (2016-10-13)
 ----------------------
 * Now use Travis for continuous integration.
