@@ -108,3 +108,22 @@ fn remove_whitespaces_1() {
     let res = remove_whitespaces(s);
     assert_eq!(&res, " Remove supplementary spaces but don't trim either ");
 }
+
+#[test]
+fn typographic_quotes_1() {
+    let s = "Some string without ' typographic ' quotes";
+    let res = typographic_quotes(s);
+    assert_eq!(&res, s);
+}
+
+#[test]
+fn typographic_quotes_2() {
+    let s = typographic_quotes("\"foo\"");
+    assert_eq!(&s, "“foo”");
+}
+
+#[test]
+fn typographic_quotes_3() {
+    let s = typographic_quotes("'foo'");
+    assert_eq!(&s, "‘foo’");
+}
