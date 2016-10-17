@@ -1,6 +1,10 @@
 ChangeLog
 ==========
 
+0.1.5 (2016-10-18)
+----------------------
+* Enhanced `typographic_quotes`'s heuristics.
+
 0.1.4 (2016-10-17)
 ---------------------
 * Added `typographic_quotes` function.
