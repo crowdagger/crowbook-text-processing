@@ -7,7 +7,7 @@ use std::default::Default;
 
 use common::{NB_CHAR, NB_CHAR_NARROW, NB_CHAR_EM};
 use common::is_whitespace;
-use clean::remove_whitespaces;
+use clean;
 
 /// Output format, to determine how to escape characters
 enum Output {
@@ -41,7 +41,7 @@ pub struct FrenchFormatter {
     /// After that number of characters, assume it isn't an abbreviation
     threshold_real_word: usize,
     /// Enable typographic apostrophe
-    typographic_apostrophe: bool,
+    typographic_quotes: bool,
 }
 
 impl Default for FrenchFormatter {
@@ -51,7 +51,7 @@ impl Default for FrenchFormatter {
             threshold_unit: 2,
             threshold_quote: 28,
             threshold_real_word: 3,
-            typographic_apostrophe: true,
+            typographic_quotes: true,
         }
     }
 }
@@ -105,13 +105,13 @@ impl FrenchFormatter {
         self
     }
 
-    /// Sets the typographic apostrophe replacement.
+    /// Enables the typographic quotes replacement.
     ///
     /// If true, "L'" will be replaced by "L’"
     ///
     /// Default is true
-    pub fn typographic_apostrophe(&mut self, b: bool) -> &mut Self {
-        self.typographic_apostrophe = b;
+    pub fn typographic_quotes(&mut self, b: bool) -> &mut Self {
+        self.typographic_quotes = b;
         self
     }
 
@@ -155,7 +155,11 @@ impl FrenchFormatter {
     /// (Try to) Format a string according to french typographic rules, and escaping non-breaking
     /// spaces according to output format
     fn format_output<'a, S: Into<Cow<'a, str>>>(&self, input: S, output: Output) -> Cow<'a, str> {
-        let input = remove_whitespaces(input); // first pass to remove whitespaces
+        let mut input = clean::remove_whitespaces(input); // first pass to remove whitespaces
+
+        if self.typographic_quotes {
+            input = clean::typographic_quotes(input);
+        }
 
         // Find first characters that are trouble
         let first = input.chars().position(is_trouble);
@@ -463,7 +467,7 @@ fn french_dashes_1() {
     let res = FrenchFormatter::new().format_tex(s);
     assert_eq!(&res,
                "Il faudrait gérer ces tirets –~sans ça certains textes \
-                rendent mal~– un jour ou l'autre");
+                rendent mal~– un jour ou l’autre");
 }
 
 #[test]
@@ -473,7 +477,7 @@ fn french_dashes_2() {
     let res = FrenchFormatter::new().format_tex(s);
     assert_eq!(&res,
                "Il faudrait gérer ces tirets –~sans ça certains textes rendent mal. Mais ce \
-                n'est pas si simple –~si~?");
+                n’est pas si simple –~si~?");
 }
 
 #[test]
