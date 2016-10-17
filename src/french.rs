@@ -40,6 +40,8 @@ pub struct FrenchFormatter {
     threshold_quote: usize,
     /// After that number of characters, assume it isn't an abbreviation
     threshold_real_word: usize,
+    /// Enable typographic apostrophe
+    typographic_apostrophe: bool,
 }
 
 impl Default for FrenchFormatter {
@@ -49,6 +51,7 @@ impl Default for FrenchFormatter {
             threshold_unit: 2,
             threshold_quote: 28,
             threshold_real_word: 3,
+            typographic_apostrophe: true,
         }
     }
 }
@@ -99,6 +102,16 @@ impl FrenchFormatter {
     /// Default is `3`
     pub fn threshold_real_word(&mut self, t: usize) -> &mut Self {
         self.threshold_real_word = t;
+        self
+    }
+
+    /// Sets the typographic apostrophe replacement.
+    ///
+    /// If true, "L'" will be replaced by "L’"
+    ///
+    /// Default is true
+    pub fn typographic_apostrophe(&mut self, b: bool) -> &mut Self {
+        self.typographic_apostrophe = b;
         self
     }
 
