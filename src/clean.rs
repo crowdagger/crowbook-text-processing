@@ -120,10 +120,18 @@ fn typographic_quotes_1() {
 fn typographic_quotes_2() {
     let s = typographic_quotes("\"foo\"");
     assert_eq!(&s, "“foo”");
+    let s = typographic_quotes("'foo'");
+    assert_eq!(&s, "‘foo’");
 }
 
 #[test]
 fn typographic_quotes_3() {
-    let s = typographic_quotes("'foo'");
-    assert_eq!(&s, "‘foo’");
+    let s = typographic_quotes("\'mam, how are you?");
+    assert_eq!(&s, "’mam, how are you?");
+}
+
+#[test]
+fn typographic_quotes_4() {
+    let s = typographic_quotes("some char: 'c', '4', '&'");
+    assert_eq!(&s, "some char: ‘c’, ‘4’, ‘&’");
 }
