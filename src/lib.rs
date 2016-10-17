@@ -17,6 +17,7 @@
 //!     escape_html,
 //!     escape_tex,
 //!     remove_whitespaces,
+//!     typographic_quotes,
 //! };
 //!
 //! let s = " Some  string with  too much   whitespaces & around 1% \
@@ -27,6 +28,12 @@
 //! println!("for HTML: {}", escape_html(new_s.clone()));
 //! // Display to LaTeX
 //! println!("for LaTeX: {}", escape_tex(new_s));
+//!
+//! // Replace quotes with typographic quotation marks
+//! let s = r#"Some "quoted string" and 'another one'."#;
+//! let new_s = typographic_quotes(s);
+//! println!("for HTML: {}", escape_html(new_s));
+//!
 //!
 //! // Format whitespaces according to french typographic rules, using
 //! // the appropriate non-breaking spaces where needed
