@@ -4,6 +4,7 @@ ChangeLog
 0.1.6 (2016-10-19)
 ----------------------
 * Enhanced `typographic_quotes`'s heuristics, and added more tests.
+* Added `ellpisis` function, and use it for in `FrenchFormatter`.
 
 0.1.5 (2016-10-18)
 ----------------------
