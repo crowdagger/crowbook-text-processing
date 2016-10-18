@@ -42,6 +42,8 @@ pub struct FrenchFormatter {
     threshold_real_word: usize,
     /// Enable typographic apostrophe
     typographic_quotes: bool,
+    /// Enaple typographic ellipsis
+    typographic_ellipsis: bool,
 }
 
 impl Default for FrenchFormatter {
@@ -52,6 +54,7 @@ impl Default for FrenchFormatter {
             threshold_quote: 28,
             threshold_real_word: 3,
             typographic_quotes: true,
+            typographic_ellipsis: true,
         }
     }
 }
@@ -115,6 +118,16 @@ impl FrenchFormatter {
         self
     }
 
+    /// Enables typographic ellipsis replacement.
+    ///
+    /// If true, "..." will be replaced by "…"
+    ///
+    /// Default is true
+    pub fn typographic_ellipsis(&mut self, b: bool) -> &mut Self {
+        self.typographic_ellipsis = b;
+        self
+    }
+
     /// (Try to) Format a string according to french typographic rules.
     ///
     /// This method should be called for each paragraph, as it makes some suppositions that
@@ -159,6 +172,10 @@ impl FrenchFormatter {
 
         if self.typographic_quotes {
             input = clean::typographic_quotes(input);
+        }
+
+        if self.typographic_ellipsis {
+            input = clean::ellipsis(input);
         }
 
         // Find first characters that are trouble
