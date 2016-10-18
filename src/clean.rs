@@ -45,6 +45,25 @@ pub fn remove_whitespaces<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
     }
 }
 
+/// Class of a character
+#[derive(Debug, PartialEq, Eq, PartialOrd, Clone, Copy)]
+enum CharClass {
+    Whitespace = 0,
+    Punctuation,
+    Alphanumeric
+}
+
+/// Get class of a character
+fn char_class(c: char) -> CharClass {
+    if c.is_alphanumeric() {
+        CharClass::Alphanumeric
+    } else if c.is_whitespace() {
+        CharClass::Whitespace
+    } else {
+        CharClass::Punctuation
+    }
+}
+
 /// Replace quotes with more typographic variants
 ///
 /// While it should work pretty well for double quotes (`"`), the rules for single
@@ -85,6 +104,7 @@ pub fn typographic_quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
         new_s.push_str(&input[0..first]);
         let chars = input[first..].chars().collect::<Vec<_>>();
         let mut closing_quote = None;
+        let mut opened_doubles = 0;
         for i in 0..chars.len() {
             let c = chars[i];
             let has_opened_quote = if let Some(n) = closing_quote {
@@ -94,12 +114,27 @@ pub fn typographic_quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
             };
             match c {
                 '"' => {
-                    if i > 0 && !chars[i-1].is_whitespace() {
-                        new_s.push('”');
-                    } else if i < chars.len() - 1 && !is_whitespace(chars[i+1]) {
+                    let prev = if i > 0 {
+                        char_class(chars[i-1])
+                    } else {
+                        CharClass::Whitespace
+                    };
+                    let next = if i < chars.len() - 1 {
+                        char_class(chars[i+1])
+                    } else {
+                        CharClass::Whitespace
+                    };
+
+                    if prev < next {
+                        opened_doubles += 1;
                         new_s.push('“');
                     } else {
-                        new_s.push('"');
+                        if opened_doubles > 0 {
+                            opened_doubles -= 1;
+                            new_s.push('”');
+                        } else {
+                            new_s.push('"');
+                        }
                     }
                 },
                 '\'' => {
