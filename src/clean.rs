@@ -80,15 +80,6 @@ fn char_class(c: char) -> CharClass {
 /// assert_eq!(&s, "‘foo’");
 /// ```
 pub fn typographic_quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
-    /// Custom whitespace-detection function, including `,`, `;`, `.`, `!`, `?`, and `:`
-    fn is_whitespace(c: char) -> bool {
-        match c {
-            ',' | '.' | ';' | '!' | '?' | ':' | '"'
-                | '(' | ')' => true,
-            _ => c.is_whitespace()
-        }
-    }
-    
     lazy_static! {
         static ref REGEX: Regex = Regex::new("[\"\']").unwrap();
     }
@@ -276,4 +267,10 @@ fn typographic_quotes_9() {
 fn typographic_quotes_10() {
     let s = typographic_quotes("\"'Let's try \"nested\" quotes,' he said.\"");
     assert_eq!(&s, "“‘Let’s try “nested” quotes,’ he said.”");
+}
+
+#[test]
+fn typographic_quotes_11() {
+    let s = typographic_quotes("Enhanced \"typographic_quotes\"'s heuristics");
+    assert_eq!(&s, "Enhanced “typographic_quotes”’s heuristics");
 }
