@@ -102,7 +102,7 @@ pub fn typographic_quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
             first -= 1;
         }
         new_s.push_str(&input[0..first]);
-        let chars = input[first..].chars().collect::<Vec<_>>();
+        let mut chars = input[first..].chars().collect::<Vec<_>>();
         let mut closing_quote = None;
         let mut opened_doubles = 0;
         for i in 0..chars.len() {
@@ -139,22 +139,24 @@ pub fn typographic_quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
                 },
                 '\'' => {
                     let prev = if i > 0 {
-                        Some(!chars[i - 1].is_whitespace())
+                        char_class(chars[i - 1])
                     } else {
-                        None
+                        CharClass::Whitespace
                     };
                     let next = if i < chars.len() - 1 {
-                        Some(!chars[i+1].is_whitespace())
+                        char_class(chars[i + 1])
                     } else {
-                        None
+                        CharClass::Whitespace
                     };
+
                     let replacement = match (prev, next) {
-                        // Elision, it's closing
-                        (Some(true), Some(true)) => '’',
+                        // Elision or possessive
+                        (CharClass::Alphanumeric, CharClass::Alphanumeric)
+//                            | (CharClass::Punctuation, CharClass::Alphanumeric)
+                            => '’',
 
                         // Beginning of word, it's opening (not always though)
-                        (Some(false), Some(true))
-                            | (None, Some(true))
+                        (x, y) if x < y
                             => {
                                 let mut is_next_closing = false;
                                 for j in (i + 1)..chars.len() {
@@ -163,9 +165,10 @@ pub fn typographic_quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
                                             continue;
                                         } else {
                                             if j >= chars.len() - 1
-                                                || is_whitespace(chars[j+1]) {
+                                                || char_class(chars[j+1]) != CharClass::Alphanumeric {
                                                     is_next_closing = true;
                                                     closing_quote = Some(j);
+                                                    chars[j] = '’'; 
                                                     break;
                                                 }
                                         }
@@ -179,12 +182,10 @@ pub fn typographic_quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
                             }
 
                         // Apostrophe at end of word, it's closing
-                        (Some(true), Some(false))
-                            | (Some(true), None)
+                        (x, y) if x > y
                             => {
                                 '’'
                             }, 
-                        
                         _ => '\'',
                     };
                     new_s.push(replacement);
@@ -269,4 +270,10 @@ fn typographic_quotes_8() {
 fn typographic_quotes_9() {
     let s = typographic_quotes("some char: '!', '?', ','");
     assert_eq!(&s, "some char: ‘!’, ‘?’, ‘,’");
+}
+
+#[test]
+fn typographic_quotes_10() {
+    let s = typographic_quotes("\"'Let's try \"nested\" quotes,' he said.\"");
+    assert_eq!(&s, "“‘Let’s try “nested” quotes,’ he said.”");
 }
