@@ -67,4 +67,5 @@ mod common;
 pub use escape::{escape_html, escape_tex};
 pub use clean::remove_whitespaces;
 pub use clean::typographic_quotes;
+pub use clean::ellipsis;
 pub use french::FrenchFormatter;

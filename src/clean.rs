@@ -64,6 +64,52 @@ fn char_class(c: char) -> CharClass {
     }
 }
 
+/// Replace ellipsis (...) with the appropriate unicode character
+///
+/// # Example
+///
+/// ```
+/// use crowbook_text_processing::ellipsis;
+/// let s = ellipsis("foo...");
+/// assert_eq!(&s, "foo…");
+/// let s = ellipsis("foo. . . ");
+/// assert_eq!(&s, "foo.\u{a0}.\u{a0}. "); // non breaking spaces
+/// ```
+pub fn ellipsis<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
+    lazy_static! {
+        static ref REGEX: Regex = Regex::new(r"\.\.\.|\. \. \. ").unwrap();
+    }
+    let input = input.into();
+    let first = REGEX.find(&input);
+    if let Some((first, _)) = first {
+        let mut output:Vec<u8> = Vec::with_capacity(input.len());
+        output.extend_from_slice(input[0..first].as_bytes());
+        let rest = input[first..].bytes().collect::<Vec<_>>();
+        let len = rest.len();
+        let mut i = 0;
+        while i < len {
+            if i + 3 <= len && &rest[i..(i+3)] == &[b'.', b'.', b'.'] {
+                output.extend_from_slice("…".as_bytes());
+                i += 3;
+            } else if i + 6 <= len && &rest[i..(i+6)] == &[b'.', b' ', b'.', b' ', b'.', b' '] {
+                if i + 6 == len || rest[i+6] != b'.' {
+                    output.extend_from_slice(". . . ".as_bytes());
+                } else {
+                    output.extend_from_slice(". . . ".as_bytes());
+                }
+                i += 6;
+            } else {
+                output.push(rest[i]);
+                i += 1;
+            }
+        }
+        Cow::Owned(String::from_utf8(output).unwrap())
+    } else {
+        input
+    }
+}
+
+
 /// Replace quotes with more typographic variants
 ///
 /// While it should work pretty well for double quotes (`"`), the rules for single
@@ -274,3 +320,35 @@ fn typographic_quotes_11() {
     let s = typographic_quotes("Enhanced \"typographic_quotes\"'s heuristics");
     assert_eq!(&s, "Enhanced “typographic_quotes”’s heuristics");
 }
+
+
+#[test]
+fn ellipsis_0() {
+    let s = ellipsis("Foo...");
+    assert_eq!(&s, "Foo…");
+}
+
+#[test]
+fn ellipsis_1() {
+    let s = ellipsis("Foo... Bar");
+    assert_eq!(&s, "Foo… Bar");
+}
+
+#[test]
+fn ellipsis_2() {
+    let s = ellipsis("foo....");
+    assert_eq!(&s, "foo….");
+}
+
+#[test]
+fn ellipsis_3() {
+    let s = ellipsis("foo. . . ");
+    assert_eq!(&s, "foo. . . ");
+}
+
+#[test]
+fn ellipsis_4() {
+    let s = ellipsis("foo. . . .");
+    assert_eq!(&s, "foo. . . .");
+}
+
