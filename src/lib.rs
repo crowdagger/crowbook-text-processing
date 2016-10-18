@@ -18,22 +18,26 @@
 //!     escape_tex,
 //!     remove_whitespaces,
 //!     typographic_quotes,
+//!     ellipsis,
 //! };
 //!
 //! let s = " Some  string with  too much   whitespaces & around 1% \
 //!          characters that might cause trouble to HTML or LaTeX.";
 //! // Remove unnecessary whitespaces (but doesn't trim at is can have meaning)
 //! let new_s = remove_whitespaces(s);
-//! // Display to HTML
+//! // Escape forHTML
 //! println!("for HTML: {}", escape_html(new_s.clone()));
-//! // Display to LaTeX
+//! // Escape for LaTeX
 //! println!("for LaTeX: {}", escape_tex(new_s));
 //!
 //! // Replace quotes with typographic quotation marks
 //! let s = r#"Some "quoted string" and 'another one'."#;
 //! let new_s = typographic_quotes(s);
-//! println!("for HTML: {}", escape_html(new_s));
+//! assert_eq!(&new_s, "Some “quoted string” and ‘another one’.");
 //!
+//! // Replace three consecutive dots with ellipsis character
+//! let s = ellipsis("Foo...");
+//! assert_eq!(&s, "Foo…");
 //!
 //! // Format whitespaces according to french typographic rules, using
 //! // the appropriate non-breaking spaces where needed
