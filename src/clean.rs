@@ -2,6 +2,17 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with
 // this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+//! This module provides function to "clean" a text typographically.
+//!
+//! # Example
+//!
+//! ```
+//! use crowbook_text_processing::clean;
+//! let input = "Some  'text'  whose formatting  could be enhanced...";
+//! let output = clean::quotes(clean::ellipsis(clean::whitespaces(input)));
+//! assert_eq!(&output, "Some ‘text’ whose formatting could be enhanced…");
+//! ```
+
 use common::is_whitespace;
 
 use regex::Regex;
@@ -110,11 +121,12 @@ pub fn ellipsis<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
 }
 
 
-/// Replace quotes with more typographic variants
+/// Replace straight quotes with more typographic variants
 ///
 /// While it should work pretty well for double quotes (`"`), the rules for single
-/// quote (`'`) are more ambiguous, as it can be a quote, or an apostrophe and it's not
-/// that easy to get right.
+/// quote (`'`) are more ambiguous, as it can be a quote or an apostrophe and it's not
+/// that easy (and, in some circumstances, impossible without understanding the meaning
+/// of the text) to get right.
 ///
 /// # Example
 ///
