@@ -10,6 +10,8 @@ Breaking changes as the API was modified:
 * `remove_whitespaces` has been renamed `whitespaces` and is no longer
   directly exported, use `clean::whitespaces`.
 * `ellipsis` is no longer directly exported, use `clean::ellipsis`.
+* `escape_html` has been renamed `html` and is no longer directly
+  exported, use `escape::html`.
 
 0.1.6 (2016-10-19)
 ----------------------

@@ -67,20 +67,21 @@ pub fn escape_nb_spaces_tex<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str>
 }
 
 
-/// Escape characters `<`, `>`, and `&`
+/// Escape characters for HTML output, replacing  `<`, `>`, and `&` with appropriate
+/// HTML entities.
 ///
 /// **Warning**: this function was written for escaping text in a markdown
-/// text processor that is designed to run on a local machine, so the content
-/// can actually be trusted, it should *not* be used for untrusted content.
+/// text processor that is designed to run on a local machine, where the content
+/// can actually be trusted. It should *not* be used for untrusted content.
 ///
 /// # Example
 ///
 /// ```
-/// use crowbook_text_processing::escape::escape_html;
-/// let s = escape_html("<foo> & <bar>");
+/// use crowbook_text_processing::escape;
+/// let s = escape::html("<foo> & <bar>");
 /// assert_eq!(&s, "&lt;foo&gt; &amp; &lt;bar&gt;");
 /// ```
-pub fn escape_html<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
+pub fn html<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
     lazy_static! {
         static ref REGEX: Regex = Regex::new("[<>&]").unwrap();
     }
@@ -182,9 +183,9 @@ pub fn escape_tex<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
 
 
 #[test]
-fn html_escape_nothing() {
+fn html_0() {
     let s = "Some string without any character to escape";
-    let result = escape_html(s);
+    let result = html(s);
     assert_eq!(s, &result);
 }
 
@@ -217,16 +218,16 @@ fn quotes_escape_nothing() {
 }
 
 #[test]
-fn html_escape_1() {
+fn html_1() {
     let s = "<p>Some characters need escaping & something</p>";
     let expected = "&lt;p&gt;Some characters need escaping &amp; something&lt;/p&gt;";
-    let actual = escape_html(s);
+    let actual = html(s);
     assert_eq!(expected, &actual);
 }
 
 #[test]
-fn html_escape_2() {
-    let actual = escape_html("<foo> & <bar>");
+fn html_2() {
+    let actual = html("<foo> & <bar>");
     let expected = "&lt;foo&gt; &amp; &lt;bar&gt;";
     assert_eq!(&actual, expected);
 }

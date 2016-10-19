@@ -12,9 +12,8 @@
 //! # Example
 //!
 //! ```
-//! use crowbook_text_processing::{FrenchFormatter, clean};
+//! use crowbook_text_processing::{FrenchFormatter, clean, escape};
 //! use crowbook_text_processing::{
-//!     escape_html,
 //!     escape_tex,
 //! };
 //!
@@ -23,7 +22,7 @@
 //! // Remove unnecessary whitespaces (but doesn't trim at is can have meaning)
 //! let new_s = clean::whitespaces(s);
 //! // Escape forHTML
-//! println!("for HTML: {}", escape_html(new_s.clone()));
+//! println!("for HTML: {}", escape::html(new_s.clone()));
 //! // Escape for LaTeX
 //! println!("for LaTeX: {}", escape_tex(new_s));
 //!
@@ -65,5 +64,5 @@ pub mod clean;
 mod french;
 mod common;
 
-pub use escape::{escape_html, escape_tex};
+pub use escape::{escape_tex};
 pub use french::FrenchFormatter;
