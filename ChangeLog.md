@@ -1,6 +1,11 @@
 ChangeLog
 ==========
 
+unreleased
+------------
+Breaking changes as the API was modified:
+* The module `french` is no longer public, only `FrenchFormatter` is.
+
 0.1.6 (2016-10-19)
 ----------------------
 * Enhanced `typographic_quotes`'s heuristics, and added more tests.

@@ -28,8 +28,26 @@ enum Output {
 ///   according to the circumstances (dialog or a few quoted words).
 /// * making spaces in numbers, e.g. `80 000` or `50 €` narrow and non-breaking.
 ///
-/// As this requires a bit of guessing sometimes, there are some paremeters that can be set
+/// Additionally, this feature use functions that are "generic" (not specific to french language)
+/// in order to:
+///
+/// * replace straight quotes (`'` and `"`) with curly, typographic ones;
+/// * replace ellipsis (`...`) with the unicode character (`…`).
+///
+/// As some of these features require a bit of guessing sometimes, there are some paremeters that can be set
 /// if you want better results.
+///
+/// # Example
+///
+/// ```
+/// use crowbook_text_processing::FrenchFormatter;
+/// let input = "Un texte à 'formater', n'est-ce pas ?";
+/// let output = FrenchFormatter::new()
+///              .typographic_ellipsis(false) // don't replace ellipsis
+///              .format_tex(input); // format to tex (so non-breaking
+///                                  // spaces are visible in assert_eq!)
+/// assert_eq!(&output, "Un texte à ‘formater’, n’est-ce pas~?");
+/// ```
 #[derive(Debug)]
 pub struct FrenchFormatter {
     /// After that number of characters, assume it's not a currency
