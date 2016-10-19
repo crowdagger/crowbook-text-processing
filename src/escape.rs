@@ -8,11 +8,23 @@ use regex::Regex;
 
 use common::{NB_CHAR, NB_CHAR_NARROW, NB_CHAR_EM};
 
-/// Escape non breaking spaces for HTML, so there is no problem for
+/// Escape non breaking spaces for HTML.
+///
+/// This is done so there is no problem for
 /// displaying them if the font or browser doesn't know what to do
 /// with them (particularly the narrow non breaking space which isn't
 /// very well supported).
-pub fn escape_nb_spaces<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
+///
+/// In order to work correctly, this will require a CSS style with
+///
+/// ```css
+/// .nnbsp {
+///    white-space: nowrap;
+/// }
+/// ```
+///
+/// Else, narrow spaces won't be no-breaking, and that might be ugly.
+pub fn nb_spaces<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
     let input = input.into();
     if let Some(first) = input.chars().position(|c| match c {
         NB_CHAR | NB_CHAR_NARROW | NB_CHAR_EM => true,
@@ -41,11 +53,11 @@ pub fn escape_nb_spaces<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
 /// # Example
 ///
 /// ```
-/// use crowbook_text_processing::escape::escape_nb_spaces_tex;
-/// let s = escape_nb_spaces_tex("Des espaces insécables ? Ça alors !");
+/// use crowbook_text_processing::escape;
+/// let s = escape::nb_spaces_tex("Des espaces insécables ? Ça alors !");
 /// assert_eq!(&s, "Des espaces insécables~? Ça alors~!");
 /// ```
-pub fn escape_nb_spaces_tex<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
+pub fn nb_spaces_tex<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
     let input = input.into();
     if let Some(first) = input.chars().position(|c| match c {
         NB_CHAR | NB_CHAR_NARROW | NB_CHAR_EM => true,
@@ -109,7 +121,7 @@ pub fn html<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
 /// Escape quotes
 ///
 /// Simply replace `"` by `'`
-pub fn escape_quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
+pub fn quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
     let input = input.into();
     if input.contains('"') {
         let mut output = String::with_capacity(input.len());
@@ -131,11 +143,11 @@ pub fn escape_quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
 /// # Example
 ///
 /// ```
-/// use crowbook_text_processing::escape::escape_tex;
-/// let s = escape_tex("command --foo # calls command with option foo");
+/// use crowbook_text_processing::escape;
+/// let s = escape::tex("command --foo # calls command with option foo");
 /// assert_eq!(&s, r"command -{}-foo \# calls command with option foo");
 /// ```
-pub fn escape_tex<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
+pub fn tex<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
     let input = input.into();
     const REGEX_LITERAL: &'static str = r"[&%$#_\x7E\x2D\{\}\^\\]";
     lazy_static! {
@@ -190,30 +202,30 @@ fn html_0() {
 }
 
 #[test]
-fn tex_escape_nothing() {
+fn tex_0() {
     let s = "Some string without any character to escape";
-    let result = escape_tex(s);
+    let result = tex(s);
     assert_eq!(s, &result);
 }
 
 #[test]
-fn nb_spaces_escape_nothing() {
+fn nb_spaces_0() {
     let s = "Some string without any character to escape";
-    let result = escape_nb_spaces(s);
+    let result = nb_spaces(s);
     assert_eq!(s, &result);
 }
 
 #[test]
-fn tex_nb_spaces_escape_nothing() {
+fn tex_nb_spaces_0() {
     let s = "Some string without any character to escape";
-    let result = escape_nb_spaces_tex(s);
+    let result = nb_spaces_tex(s);
     assert_eq!(s, &result);
 }
 
 #[test]
-fn quotes_escape_nothing() {
+fn quotes_0() {
     let s = "Some string without any character to escape";
-    let result = escape_quotes(s);
+    let result = quotes(s);
     assert_eq!(s, &result);
 }
 
@@ -233,36 +245,36 @@ fn html_2() {
 }
 
 #[test]
-fn tex_escape_braces() {
-    let actual = escape_tex(r"\foo{bar}");
+fn tex_braces() {
+    let actual = tex(r"\foo{bar}");
     let expected = r"\textbackslash{}foo\{bar\}";
     assert_eq!(&actual, expected);
 }
 
 #[test]
-fn tex_escape_dashes() {
-    let actual = escape_tex("--foo, ---bar");
+fn tex_dashes() {
+    let actual = tex("--foo, ---bar");
     let expected = r"-{}-foo, -{}-{}-bar";
     assert_eq!(&actual, expected);
 }
 
 #[test]
-fn tex_escape_numbers() {
-    let actual = escape_tex(r"30000$ is 10% of number #1 income");
+fn tex_numbers() {
+    let actual = tex(r"30000$ is 10% of number #1 income");
     let expected = r"30000\$ is 10\% of number \#1 income";
     assert_eq!(&actual, expected);
 }
 
 #[test]
 fn quotes_escape() {
-    let actual = escape_quotes(r#"Some text with "quotes""#);
+    let actual = quotes(r#"Some text with "quotes""#);
     let expected = r#"Some text with 'quotes'"#;
     assert_eq!(&actual, expected);
 }
 
 #[test]
 fn nb_spaces_escape() {
-    let actual = escape_nb_spaces("This contains non breaking spaces");
+    let actual = nb_spaces("This contains non breaking spaces");
     let expected = "This<span class = \"nbsp\">&#160;</span>contains\
                     <span class = \"nnbsp\">&#8201;</span>non breaking spaces";
     assert_eq!(&actual, expected);

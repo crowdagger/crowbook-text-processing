@@ -13,9 +13,6 @@
 //!
 //! ```
 //! use crowbook_text_processing::{FrenchFormatter, clean, escape};
-//! use crowbook_text_processing::{
-//!     escape_tex,
-//! };
 //!
 //! let s = " Some  string with  too much   whitespaces & around 1% \
 //!          characters that might cause trouble to HTML or LaTeX.";
@@ -24,7 +21,7 @@
 //! // Escape forHTML
 //! println!("for HTML: {}", escape::html(new_s.clone()));
 //! // Escape for LaTeX
-//! println!("for LaTeX: {}", escape_tex(new_s));
+//! println!("for LaTeX: {}", escape::tex(new_s));
 //!
 //! // Replace quotes with typographic quotation marks
 //! let s = r#"Some "quoted string" and 'another one'."#;
@@ -41,7 +38,7 @@
 //!          « typographiquement correct ».";
 //! let french = FrenchFormatter::new();
 //! println!("for text: {}", french.format(s));
-//! println!("for LaTeX: {}", escape_tex(french.format_tex(s)));
+//! println!("for LaTeX: {}", escape::tex(french.format_tex(s)));
 //! ```
 //! # Requirements
 //!
@@ -64,5 +61,4 @@ pub mod clean;
 mod french;
 mod common;
 
-pub use escape::{escape_tex};
 pub use french::FrenchFormatter;

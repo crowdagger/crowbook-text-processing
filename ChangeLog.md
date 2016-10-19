@@ -12,6 +12,15 @@ Breaking changes as the API was modified:
 * `ellipsis` is no longer directly exported, use `clean::ellipsis`.
 * `escape_html` has been renamed `html` and is no longer directly
   exported, use `escape::html`.
+* `escape_tex` has been renamed `tex` and is no longer directly
+  exported, use `escape::tex`.
+* `escape_nb_spaces` has been renamed `nb_spaces` and is no longer directly
+  exported, use `escape::nb_spaces`.
+* `escape_nb_spaces_tex` has been renamed `nb_spaces_tex` and is no longer directly
+  exported, use `escape::nb_spaces_tex`.
+* `escape_quotes` has been renamed `quotes` and is no longer directly
+  exported, use `escape::quotes`.
+  
 
 0.1.6 (2016-10-19)
 ----------------------
