@@ -2,7 +2,7 @@ extern crate crowbook_text_processing;
 
 use crowbook_text_processing::escape::*;
 use crowbook_text_processing::clean::*;
-use crowbook_text_processing::french::FrenchFormatter;
+use crowbook_text_processing::FrenchFormatter;
 
 fn main() {
 

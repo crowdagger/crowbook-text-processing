@@ -138,7 +138,7 @@ impl FrenchFormatter {
     /// # Example
     ///
     /// ```
-    /// use crowbook_text_processing::french::FrenchFormatter;
+    /// use crowbook_text_processing::FrenchFormatter;
     /// let f = FrenchFormatter::new();
     /// let s = f.format("« Est-ce bien formaté ? » se demandait-elle — les espaces \
     ///                   insécables étaient tellement compliquées à gérer,
@@ -155,7 +155,7 @@ impl FrenchFormatter {
     /// # Example
     ///
     /// ```
-    /// use crowbook_text_processing::french::FrenchFormatter;
+    /// use crowbook_text_processing::FrenchFormatter;
     /// let f = FrenchFormatter::new();
     /// let s = f.format_tex("« Est-ce bien formaté ? »");
     /// assert_eq!(&s, "«~Est-ce bien formaté~?~»");

@@ -64,8 +64,8 @@ extern crate lazy_static;
 
 pub mod escape;
 pub mod clean;
-pub mod french;
 
+mod french;
 mod common;
 
 pub use escape::{escape_html, escape_tex};

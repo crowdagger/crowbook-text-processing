@@ -1,5 +1,6 @@
 extern crate crowbook_text_processing;
-use crowbook_text_processing::french::FrenchFormatter;
+use crowbook_text_processing::FrenchFormatter;
+
 use std::borrow::Cow;
 
 // Code to end shell colouring
