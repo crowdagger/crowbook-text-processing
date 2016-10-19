@@ -189,7 +189,7 @@ impl FrenchFormatter {
         let mut input = clean::remove_whitespaces(input); // first pass to remove whitespaces
 
         if self.typographic_quotes {
-            input = clean::typographic_quotes(input);
+            input = clean::quotes(input);
         }
 
         if self.typographic_ellipsis {

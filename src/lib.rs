@@ -12,12 +12,11 @@
 //! # Example
 //!
 //! ```
+//! use crowbook_text_processing::{FrenchFormatter, clean};
 //! use crowbook_text_processing::{
-//!     FrenchFormatter,
 //!     escape_html,
 //!     escape_tex,
 //!     remove_whitespaces,
-//!     typographic_quotes,
 //!     ellipsis,
 //! };
 //!
@@ -32,7 +31,7 @@
 //!
 //! // Replace quotes with typographic quotation marks
 //! let s = r#"Some "quoted string" and 'another one'."#;
-//! let new_s = typographic_quotes(s);
+//! let new_s = clean::quotes(s);
 //! assert_eq!(&new_s, "Some “quoted string” and ‘another one’.");
 //!
 //! // Replace three consecutive dots with ellipsis character
@@ -70,6 +69,5 @@ mod common;
 
 pub use escape::{escape_html, escape_tex};
 pub use clean::remove_whitespaces;
-pub use clean::typographic_quotes;
 pub use clean::ellipsis;
 pub use french::FrenchFormatter;

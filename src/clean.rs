@@ -119,13 +119,13 @@ pub fn ellipsis<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
 /// # Example
 ///
 /// ```
-/// use crowbook_text_processing::typographic_quotes;
-/// let s = typographic_quotes("\"foo\"");
+/// use crowbook_text_processing::clean;
+/// let s = clean::quotes("\"foo\"");
 /// assert_eq!(&s, "“foo”");
-/// let s = typographic_quotes("'foo'");
+/// let s = clean::quotes("'foo'");
 /// assert_eq!(&s, "‘foo’");
 /// ```
-pub fn typographic_quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
+pub fn quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
     lazy_static! {
         static ref REGEX: Regex = Regex::new("[\"\']").unwrap();
     }
@@ -252,73 +252,73 @@ fn remove_whitespaces_1() {
 }
 
 #[test]
-fn typographic_quotes_1() {
+fn quotes_1() {
     let s = "Some string without ' typographic ' quotes";
-    let res = typographic_quotes(s);
+    let res = quotes(s);
     assert_eq!(&res, s);
 }
 
 #[test]
-fn typographic_quotes_2() {
-    let s = typographic_quotes("\"foo\"");
+fn quotes_2() {
+    let s = quotes("\"foo\"");
     assert_eq!(&s, "“foo”");
-    let s = typographic_quotes("'foo'");
+    let s = quotes("'foo'");
     assert_eq!(&s, "‘foo’");
 }
 
 #[test]
-fn typographic_quotes_3() {
-    let s = typographic_quotes("\'mam, how are you?");
+fn quotes_3() {
+    let s = quotes("\'mam, how are you?");
     assert_eq!(&s, "’mam, how are you?");
 }
 
 #[test]
-fn typographic_quotes_4() {
-    let s = typographic_quotes("some char: 'c', '4', '&'");
+fn quotes_4() {
+    let s = quotes("some char: 'c', '4', '&'");
     assert_eq!(&s, "some char: ‘c’, ‘4’, ‘&’");
 }
 
 #[test]
-fn typographic_quotes_5() {
-    let s = typographic_quotes("It's a good day to say 'hi'");
+fn quotes_5() {
+    let s = quotes("It's a good day to say 'hi'");
     assert_eq!(&s, "It’s a good day to say ‘hi’");
 }
 
 #[test]
-fn typographic_quotes_6() {
-    let s = typographic_quotes("The '60s were nice, weren't they?");
+fn quotes_6() {
+    let s = quotes("The '60s were nice, weren't they?");
     assert_eq!(&s, "The ’60s were nice, weren’t they?");
 }
 
 #[test]
-fn typographic_quotes_7() {
-    let s = typographic_quotes("Plurals' possessive");
+fn quotes_7() {
+    let s = quotes("Plurals' possessive");
     assert_eq!(&s, "Plurals’ possessive");
 }
 
 #[test]
-fn typographic_quotes_8() {
-    let s = typographic_quotes("\"I like 'That '70s show'\", she said");
+fn quotes_8() {
+    let s = quotes("\"I like 'That '70s show'\", she said");
     assert_eq!(&s, "“I like ‘That ’70s show’”, she said");
 }
 
 
 #[test]
-fn typographic_quotes_9() {
-    let s = typographic_quotes("some char: '!', '?', ','");
+fn quotes_9() {
+    let s = quotes("some char: '!', '?', ','");
     assert_eq!(&s, "some char: ‘!’, ‘?’, ‘,’");
 }
 
 #[test]
-fn typographic_quotes_10() {
-    let s = typographic_quotes("\"'Let's try \"nested\" quotes,' he said.\"");
+fn quotes_10() {
+    let s = quotes("\"'Let's try \"nested\" quotes,' he said.\"");
     assert_eq!(&s, "“‘Let’s try “nested” quotes,’ he said.”");
 }
 
 #[test]
-fn typographic_quotes_11() {
-    let s = typographic_quotes("Enhanced \"typographic_quotes\"'s heuristics");
-    assert_eq!(&s, "Enhanced “typographic_quotes”’s heuristics");
+fn quotes_11() {
+    let s = quotes("Enhanced \"quotes\"'s heuristics");
+    assert_eq!(&s, "Enhanced “quotes”’s heuristics");
 }
 
 
