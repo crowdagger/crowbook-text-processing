@@ -61,7 +61,7 @@ pub fn whitespaces<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
 enum CharClass {
     Whitespace = 0,
     Punctuation,
-    Alphanumeric
+    Alphanumeric,
 }
 
 /// Get class of a character
@@ -93,17 +93,17 @@ pub fn ellipsis<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
     let input = input.into();
     let first = REGEX.find(&input);
     if let Some((first, _)) = first {
-        let mut output:Vec<u8> = Vec::with_capacity(input.len());
+        let mut output: Vec<u8> = Vec::with_capacity(input.len());
         output.extend_from_slice(input[0..first].as_bytes());
         let rest = input[first..].bytes().collect::<Vec<_>>();
         let len = rest.len();
         let mut i = 0;
         while i < len {
-            if i + 3 <= len && &rest[i..(i+3)] == &[b'.', b'.', b'.'] {
+            if i + 3 <= len && &rest[i..(i + 3)] == &[b'.', b'.', b'.'] {
                 output.extend_from_slice("…".as_bytes());
                 i += 3;
-            } else if i + 6 <= len && &rest[i..(i+6)] == &[b'.', b' ', b'.', b' ', b'.', b' '] {
-                if i + 6 == len || rest[i+6] != b'.' {
+            } else if i + 6 <= len && &rest[i..(i + 6)] == &[b'.', b' ', b'.', b' ', b'.', b' '] {
+                if i + 6 == len || rest[i + 6] != b'.' {
                     output.extend_from_slice(". . . ".as_bytes());
                 } else {
                     output.extend_from_slice(". . . ".as_bytes());
@@ -164,12 +164,12 @@ pub fn quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
             match c {
                 '"' => {
                     let prev = if i > 0 {
-                        char_class(chars[i-1])
+                        char_class(chars[i - 1])
                     } else {
                         CharClass::Whitespace
                     };
                     let next = if i < chars.len() - 1 {
-                        char_class(chars[i+1])
+                        char_class(chars[i + 1])
                     } else {
                         CharClass::Whitespace
                     };
@@ -185,7 +185,7 @@ pub fn quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
                             new_s.push('"');
                         }
                     }
-                },
+                }
                 '\'' => {
                     let prev = if i > 0 {
                         char_class(chars[i - 1])
@@ -217,7 +217,7 @@ pub fn quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
                                                 || char_class(chars[j+1]) != CharClass::Alphanumeric {
                                                     is_next_closing = true;
                                                     closing_quote = Some(j);
-                                                    chars[j] = '’'; 
+                                                    chars[j] = '’';
                                                     break;
                                                 }
                                         }
@@ -234,7 +234,7 @@ pub fn quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
                         (x, y) if x > y
                             => {
                                 '’'
-                            }, 
+                            },
                         _ => '\'',
                     };
                     new_s.push(replacement);
@@ -245,8 +245,8 @@ pub fn quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
                     // } else {
                     //     new_s.push('\'');
                     // }
-                },
-                _ => new_s.push(c)
+                }
+                _ => new_s.push(c),
             }
         }
         Cow::Owned(new_s)
@@ -363,4 +363,3 @@ fn ellipsis_4() {
     let s = ellipsis("foo. . . .");
     assert_eq!(&s, "foo. . . .");
 }
-

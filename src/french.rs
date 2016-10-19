@@ -34,8 +34,8 @@ enum Output {
 /// * replace straight quotes (`'` and `"`) with curly, typographic ones;
 /// * replace ellipsis (`...`) with the unicode character (`…`).
 ///
-/// As some of these features require a bit of guessing sometimes, there are some paremeters that can be set
-/// if you want better results.
+/// As some of these features require a bit of guessing sometimes, there are some paremeters that
+/// can be set if you want better results.
 ///
 /// # Example
 ///
@@ -475,24 +475,21 @@ fn french() {
 fn french_quotes_1() {
     let s = "« Un test »";
     let res = FrenchFormatter::new().format_tex(s);
-    assert_eq!(&res,
-               "«~Un test~»");
+    assert_eq!(&res, "«~Un test~»");
 }
 
 #[test]
 fn french_quotes_2() {
     let s = "« Un test";
     let res = FrenchFormatter::new().format_tex(s);
-    assert_eq!(&res,
-               "«~Un test");
+    assert_eq!(&res, "«~Un test");
 }
 
 #[test]
 fn french_quotes_3() {
     let s = "Un test »";
     let res = FrenchFormatter::new().format_tex(s);
-    assert_eq!(&res,
-               "Un test~»");
+    assert_eq!(&res, "Un test~»");
 }
 
 #[test]
