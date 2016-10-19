@@ -12,11 +12,11 @@ use std::borrow::Cow;
 /// # Example
 ///
 /// ```
-/// use crowbook_text_processing::clean::remove_whitespaces;
-/// let s = remove_whitespaces("  A  string   with   more   whitespaces  than  needed   ");
+/// use crowbook_text_processing::clean;
+/// let s = clean::whitespaces("  A  string   with   more   whitespaces  than  needed   ");
 /// assert_eq!(&s, " A string with more whitespaces than needed ");
 /// ```
-pub fn remove_whitespaces<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
+pub fn whitespaces<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
     lazy_static! {
         static ref REGEX: Regex = Regex::new(r"[  \x{202F}\x{2002}]{2,}?").unwrap();
     }
@@ -245,9 +245,9 @@ pub fn quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
 
 
 #[test]
-fn remove_whitespaces_1() {
+fn whitespaces_1() {
     let s = "   Remove    supplementary   spaces    but    don't    trim     either   ";
-    let res = remove_whitespaces(s);
+    let res = whitespaces(s);
     assert_eq!(&res, " Remove supplementary spaces but don't trim either ");
 }
 

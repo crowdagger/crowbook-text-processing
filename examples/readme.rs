@@ -1,13 +1,13 @@
 extern crate crowbook_text_processing;
 
 use crowbook_text_processing::escape::*;
-use crowbook_text_processing::clean::*;
+use crowbook_text_processing::clean;
 use crowbook_text_processing::FrenchFormatter;
 
 fn main() {
 
     let s = " Some  string with  too much   whitespaces & around 1% characters that might cause trouble to HTML or LaTeX.";
-    let new_s = remove_whitespaces(s);
+    let new_s = clean::whitespaces(s);
     println!("for HTML: {}", escape_html(new_s.clone()));
     println!("for LaTeX: {}", escape_tex(new_s));
     

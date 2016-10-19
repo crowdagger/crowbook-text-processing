@@ -16,13 +16,12 @@
 //! use crowbook_text_processing::{
 //!     escape_html,
 //!     escape_tex,
-//!     remove_whitespaces,
 //! };
 //!
 //! let s = " Some  string with  too much   whitespaces & around 1% \
 //!          characters that might cause trouble to HTML or LaTeX.";
 //! // Remove unnecessary whitespaces (but doesn't trim at is can have meaning)
-//! let new_s = remove_whitespaces(s);
+//! let new_s = clean::whitespaces(s);
 //! // Escape forHTML
 //! println!("for HTML: {}", escape_html(new_s.clone()));
 //! // Escape for LaTeX
@@ -67,5 +66,4 @@ mod french;
 mod common;
 
 pub use escape::{escape_html, escape_tex};
-pub use clean::remove_whitespaces;
 pub use french::FrenchFormatter;

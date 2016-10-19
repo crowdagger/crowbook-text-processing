@@ -186,7 +186,7 @@ impl FrenchFormatter {
     /// (Try to) Format a string according to french typographic rules, and escaping non-breaking
     /// spaces according to output format
     fn format_output<'a, S: Into<Cow<'a, str>>>(&self, input: S, output: Output) -> Cow<'a, str> {
-        let mut input = clean::remove_whitespaces(input); // first pass to remove whitespaces
+        let mut input = clean::whitespaces(input); // first pass to remove whitespaces
 
         if self.typographic_quotes {
             input = clean::quotes(input);
