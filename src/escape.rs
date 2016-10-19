@@ -2,11 +2,30 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with
 // this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+//! Some functions to escape character for display in HTML or LaTeX.
+//!
+//! The two most useful ones are `tex` and `html`.
+//!
+//! # Example
+//!
+//! ```
+//! use crowbook_text_processing::escape;
+//! let input = "<foo> & <bar>";
+//! let output = escape::html(input);
+//! assert_eq!(&output, "&lt;foo&gt; &amp; &lt;bar&gt;");
+//!
+//! let input = "#2: 20%";
+//! let output = escape::tex(input);
+//! assert_eq!(&output, r"\#2: 20\%");
+//! ```
+
+
 use std::borrow::Cow;
 
 use regex::Regex;
 
 use common::{NB_CHAR, NB_CHAR_NARROW, NB_CHAR_EM};
+
 
 /// Escape non breaking spaces for HTML.
 ///
