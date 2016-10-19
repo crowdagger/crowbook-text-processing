@@ -137,7 +137,7 @@ pub fn html<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
     }
 }
 
-/// Escape quotes
+/// Very naively escape quotes
 ///
 /// Simply replace `"` by `'`
 pub fn quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
