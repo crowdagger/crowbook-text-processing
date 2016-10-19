@@ -7,6 +7,7 @@ Breaking changes as the API was modified:
 * The module `french` is no longer public, only `FrenchFormatter` is.
 * `typographic_quotes` has been renamed `quotes` and is no longer
   directly exported, use `clean::quotes`.
+* `ellipsis` is no longer directly exported, use `clean::ellipsis`.
 
 0.1.6 (2016-10-19)
 ----------------------

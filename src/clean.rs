@@ -69,10 +69,10 @@ fn char_class(c: char) -> CharClass {
 /// # Example
 ///
 /// ```
-/// use crowbook_text_processing::ellipsis;
-/// let s = ellipsis("foo...");
+/// use crowbook_text_processing::clean;
+/// let s = clean::ellipsis("foo...");
 /// assert_eq!(&s, "foo…");
-/// let s = ellipsis("foo. . . ");
+/// let s = clean::ellipsis("foo. . . ");
 /// assert_eq!(&s, "foo.\u{a0}.\u{a0}. "); // non breaking spaces
 /// ```
 pub fn ellipsis<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {

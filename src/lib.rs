@@ -17,7 +17,6 @@
 //!     escape_html,
 //!     escape_tex,
 //!     remove_whitespaces,
-//!     ellipsis,
 //! };
 //!
 //! let s = " Some  string with  too much   whitespaces & around 1% \
@@ -35,7 +34,7 @@
 //! assert_eq!(&new_s, "Some “quoted string” and ‘another one’.");
 //!
 //! // Replace three consecutive dots with ellipsis character
-//! let s = ellipsis("Foo...");
+//! let s = clean::ellipsis("Foo...");
 //! assert_eq!(&s, "Foo…");
 //!
 //! // Format whitespaces according to french typographic rules, using
@@ -69,5 +68,4 @@ mod common;
 
 pub use escape::{escape_html, escape_tex};
 pub use clean::remove_whitespaces;
-pub use clean::ellipsis;
 pub use french::FrenchFormatter;
