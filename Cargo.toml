@@ -1,8 +1,8 @@
 [package]
 name = "crowbook-text-processing"
-version = "0.2.0"
+version = "0.2.1-pre"
 authors = ["Elisabeth Henry <liz.henry@ouvaton.org>"]
-description = "Some text processing functions written for Crowbook and moved in a separate library. Include html/tex escaping, unnecessary whitespace cleaning, and french typographic formatting."
+description = "Provides some utilities functions for escaping text (HTML/LaTeX) and formatting it according to typographic rules (smart quotes, ellipsis, french typograhic rules)"
 readme = "README.md"
 keywords = ["text"]
 repository = "https://github.com/lise-henry/crowbook-text-processing/"
