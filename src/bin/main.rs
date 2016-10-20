@@ -45,7 +45,7 @@ Valid transformations are the following:",
                  bin = env!("CARGO_PKG_NAME"),
                  version = env!("CARGO_PKG_VERSION"));
         print_transformations();
-        println!();
+        println!("");
         println!("EXAMPLE: {bin} clean_quotes clean_ellipsis escape_html",
                  bin = env!("CARGO_PKG_NAME"));
     } else {
