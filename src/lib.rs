@@ -2,12 +2,24 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with
 // this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-//! Some utilities functions for processing texts.
+//! Provides some utilities functions for escaping text (to HTML or
+//! LaTeX) and formatting it according to typographic rules (smart
+//! quotes, ellipsis, french rules for non-breaking spaces).
 //!
 //! These functions were originally written for
 //! [Crowbook](https://github.com/lise-henry/crowbook), but have
 //! been published on a separate crate and under a less restrictive
-//! license (MPL instead of LGPL) so they can be used elsewhere.
+//! license (MPL instead of LGPL) so they can be used in other projects.
+//!
+//! # Usage
+//!
+//! Just add this line in the `dependencies` section of your `Cargo.toml`
+//! file:
+//!
+//! ```toml
+//! [dependencies]
+//! crowbook-text-processing = "0.2"
+//! ```
 //!
 //! # Example
 //!
@@ -16,7 +28,7 @@
 //!
 //! let s = " Some  string with  too much   whitespaces & around 1% \
 //!          characters that might cause trouble to HTML or LaTeX.";
-//! // Remove unnecessary whitespaces (but doesn't trim at is can have meaning)
+//! // Remove unnecessary whitespaces (but doesn't trim as it can have meaning)
 //! let new_s = clean::whitespaces(s);
 //! // Escape forHTML
 //! println!("for HTML: {}", escape::html(new_s.clone()));
