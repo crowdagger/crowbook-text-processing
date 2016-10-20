@@ -1,6 +1,10 @@
 ChangeLog
 ==========
 
+unreleased
+-------------
+* Added a binary, so it can be used interactively.
+
 0.2.0 (2016-10-20)
 ---------------------
 Breaking changes as the API was modified:
