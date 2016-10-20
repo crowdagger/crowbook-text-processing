@@ -177,13 +177,11 @@ pub fn quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
                     if prev < next {
                         opened_doubles += 1;
                         new_s.push('“');
+                    } else if opened_doubles > 0 {
+                        opened_doubles -= 1;
+                        new_s.push('”');
                     } else {
-                        if opened_doubles > 0 {
-                            opened_doubles -= 1;
-                            new_s.push('”');
-                        } else {
-                            new_s.push('"');
-                        }
+                        new_s.push('"');
                     }
                 }
                 '\'' => {
@@ -212,15 +210,13 @@ pub fn quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
                                     if chars[j] == '\'' {
                                         if chars[j-1].is_whitespace() {
                                             continue;
-                                        } else {
-                                            if j >= chars.len() - 1
-                                                || char_class(chars[j+1]) != CharClass::Alphanumeric {
-                                                    is_next_closing = true;
-                                                    closing_quote = Some(j);
-                                                    chars[j] = '’';
-                                                    break;
-                                                }
-                                        }
+                                        } else if j >= chars.len() - 1
+                                            || char_class(chars[j+1]) != CharClass::Alphanumeric {
+                                                is_next_closing = true;
+                                                closing_quote = Some(j);
+                                                chars[j] = '’';
+                                                break;
+                                            }
                                     }
                                 }
                                 if is_next_closing && !has_opened_quote {
