@@ -42,12 +42,12 @@ Read standard input, sequentially apply each TRANSFORMATION on the text, and pri
 result on standard output.
 
 Valid transformations are the following:",
-                 bin = env!("CARGO_PKG_NAME"),
+                 bin = args[0],
                  version = env!("CARGO_PKG_VERSION"));
         print_transformations();
         println!("");
         println!("EXAMPLE: {bin} clean_quotes clean_ellipsis escape_html",
-                 bin = env!("CARGO_PKG_NAME"));
+                 bin = args[0]);
     } else {
         let french = FrenchFormatter::new();
 
