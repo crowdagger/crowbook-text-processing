@@ -68,4 +68,4 @@ versioning in the following way:
 
 ## ChangeLog
 
-See the [ChangeLog file](ChangeLog).
+See the [ChangeLog file](ChangeLog.md).
