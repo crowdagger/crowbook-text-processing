@@ -25,7 +25,7 @@ crowbook-text-processing = "0.2"
 
 ## Example
 
-```
+```rust
 use crowbook_text_processing::{FrenchFormatter, clean, escape};
 
 let s = " Some  string with  too much   whitespaces & around 1% \
