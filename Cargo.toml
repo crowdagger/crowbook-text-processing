@@ -9,6 +9,14 @@ repository = "https://github.com/lise-henry/crowbook-text-processing/"
 documentation = "https://docs.rs/crowbook-text-processing"
 license = "MPL-2.0"
 
+[lib]
+name = "crowbook_text_processing"
+path = "src/lib/lib.rs"
+
+[[bin]]
+name = "crowbook_text_processing"
+path = "src/bin/main.rs"
+
 [dependencies]
 regex = "0.1"
 lazy_static = "0.2"
