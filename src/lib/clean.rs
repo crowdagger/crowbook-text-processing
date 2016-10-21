@@ -428,7 +428,13 @@ fn quotes_11() {
 #[test]
 fn quotes_12() {
     let s = quotes("A double quote--\"within\" dashes--would be nice.");
-    assert_eq!(&s, "A double quotes--“within” dashes-- would be nice.");
+    assert_eq!(&s, "A double quote--“within” dashes--would be nice.");
+}
+
+#[test]
+fn quotes_13() {
+    let s = quotes("A double quote–\"within\" dashes–would be nice.");
+    assert_eq!(&s, "A double quote–“within” dashes–would be nice.");
 }
 
 
