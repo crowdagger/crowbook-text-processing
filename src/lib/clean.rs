@@ -425,6 +425,12 @@ fn quotes_11() {
     assert_eq!(&s, "Enhanced “quotes”’s heuristics");
 }
 
+#[test]
+fn quotes_12() {
+    let s = quotes("A double quote--\"within\" dashes--would be nice.");
+    assert_eq!(&s, "A double quotes--“within” dashes-- would be nice.");
+}
+
 
 #[test]
 fn ellipsis_0() {
