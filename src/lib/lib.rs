@@ -63,6 +63,9 @@
 //!
 //! * an increase of `x` in `0.x.y` means breaking changes.
 //! * an increase of `y` in `0.x.y` means non-breaking changes.
+
+#![deny(missing_docs)]
+
 extern crate regex;
 #[macro_use]
 extern crate lazy_static;
