@@ -18,6 +18,8 @@ const TOOLS: &'static[(&'static str, &'static str)] = &[
     ("escape_nb_spaces_tex", "escape non-breaking spaces using ‘~’ symbol"),
     ("clean_ellipsis", "use unicode character ‘…’ for ellipsis"),
     ("clean_quotes", "try to replace straight quotes with curly ones"),
+    ("ligature_dashes", "replace ‘--’ by ‘–’ and ‘---’ by ‘—’"),
+    ("ligature_guillemets", "replace ‘<<’ by ‘«’ and ‘>>’ by ‘»’"),
     ("format_french", "try to apply french typographic rules"),
 ];
 
@@ -64,6 +66,8 @@ Valid transformations are the following:",
                     "clean_quotes" => clean::quotes(output),
                     "clean_ellipsis" => clean::ellipsis(output),
                     "format_french" => french.format(output),
+                    "ligature_dashes" => clean::dashes(output),
+                    "ligature_guillemets" => clean::guillemets(output),
                     t => {
                         println!("Error: transformation “{}” not recognized.", t);
                         println!("Valid transformations are:");
