@@ -1,6 +1,10 @@
 ChangeLog
 ==========
 
+0.2.2 (2016-10-21)
+----------------------
+* Fix possible `character boundary` panic in `clean::quotes`.
+
 0.2.1 (2016-10-21)
 ----------------------
 * Added a binary, so it can be used interactively.
