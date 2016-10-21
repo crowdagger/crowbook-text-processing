@@ -276,7 +276,6 @@ pub fn dashes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
         let rest = input[first..].bytes().collect::<Vec<_>>();
         let len = rest.len();
         let mut i = 0;
-        println!("found first dash at {}", first);
         while i < len {
             if i + 2 <= len && &rest[i..(i + 2)] == &[b'-', b'-'] {
                 if i + 2 < len && rest[i + 2] == b'-' {
