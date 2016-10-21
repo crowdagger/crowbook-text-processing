@@ -252,6 +252,51 @@ pub fn quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
 }
 
 
+/// Replace double dashes (`--`) and triple dashes (`---`) to en dash and em dash, respectively.
+///
+/// This function can be useful when writing literaty texts, but should be used with caution
+/// as double and triple dashes can have special meanings.
+///
+/// # Example
+///
+/// ```
+/// use crowbook_text_processing::clean;
+/// let s = clean::dashes("--- Hi, he said -- unexpectedly");
+/// assert_eq!(&s, "— Hi, he said – unexpectedly");
+/// ```
+pub fn dashes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
+    lazy_static! {
+        static ref REGEX: Regex = Regex::new(r"\x2D\x2D").unwrap();
+    }
+    let input = input.into();
+    let first = REGEX.find(&input);
+    if let Some((first, _)) = first {
+        let mut output: Vec<u8> = Vec::with_capacity(input.len());
+        output.extend_from_slice(input[0..first].as_bytes());
+        let rest = input[first..].bytes().collect::<Vec<_>>();
+        let len = rest.len();
+        let mut i = 0;
+        println!("found first dash at {}", first);
+        while i < len {
+            if i + 2 <= len && &rest[i..(i + 2)] == &[b'-', b'-'] {
+                if i + 2 < len && rest[i + 2] == b'-' {
+                    output.extend_from_slice("—".as_bytes());
+                    i += 3;
+                } else {
+                    output.extend_from_slice("–".as_bytes());
+                    i += 2;
+                }
+            } else {
+                output.push(rest[i]);
+                i += 1;
+            }
+        }
+        Cow::Owned(String::from_utf8(output).unwrap())
+    } else {
+        input
+    }
+}
+
 #[test]
 fn whitespaces_1() {
     let s = "   Remove    supplementary   spaces    but    don't    trim     either   ";
@@ -359,3 +404,34 @@ fn ellipsis_4() {
     let s = ellipsis("foo. . . .");
     assert_eq!(&s, "foo. . . .");
 }
+
+#[test]
+fn ellipsis_5() {
+    let s = ellipsis("foo..");
+    assert_eq!(&s, "foo..");
+}
+
+#[test]
+fn dashes_0() {
+    let s = dashes("foo - bar");
+    assert_eq!(&s, "foo - bar");
+}
+
+#[test]
+fn dashes_1() {
+    let s = dashes("foo -- bar");
+    assert_eq!(&s, "foo – bar");
+}
+
+#[test]
+fn dashes_2() {
+    let s = dashes("foo --- bar");
+    assert_eq!(&s, "foo — bar");
+}
+
+#[test]
+fn dashes_3() {
+    let s = dashes("foo --- bar--");
+    assert_eq!(&s, "foo — bar–");
+}
+    
