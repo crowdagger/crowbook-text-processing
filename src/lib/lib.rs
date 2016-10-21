@@ -54,7 +54,7 @@
 //! ```
 //! # Requirements
 //!
-//! * `rustc >= 1.6.0`
+//! * `rustc >= 1.9.0`
 //!
 //! # Semantic versioning
 //!
