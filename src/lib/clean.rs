@@ -152,6 +152,10 @@ pub fn quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
             // Move one step backward since we might need to know if previous char was
             // a letter or not
             first -= 1;
+            // Check that it is a character boundary, else go backward
+            while !input.is_char_boundary(first) {
+                first -= 1;
+            }
         }
         new_s.push_str(&input[0..first]);
         let mut chars = input[first..].chars().collect::<Vec<_>>();
