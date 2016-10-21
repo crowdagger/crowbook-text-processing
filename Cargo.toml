@@ -1,6 +1,6 @@
 [package]
 name = "crowbook-text-processing"
-version = "0.2.2"
+version = "0.2.3-pre"
 authors = ["Elisabeth Henry <liz.henry@ouvaton.org>"]
 description = "Provides some utilities functions for escaping text (HTML/LaTeX) and formatting it according to typographic rules (smart quotes, ellipsis, french typograhic rules)"
 readme = "README.md"
@@ -8,6 +8,10 @@ keywords = ["text"]
 repository = "https://github.com/lise-henry/crowbook-text-processing/"
 documentation = "https://docs.rs/crowbook-text-processing"
 license = "MPL-2.0"
+
+exclude = [
+        "benches/perf.ods",
+]
 
 [lib]
 name = "crowbook_text_processing"
