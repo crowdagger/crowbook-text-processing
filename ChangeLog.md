@@ -1,8 +1,8 @@
 ChangeLog
 ==========
 
-unreleased
--------------
+0.2.1 (2016-10-21)
+----------------------
 * Added a binary, so it can be used interactively.
 * Added `clean::dashes` that replaces `--` to `–` and `---` to `—`.
 * Added `clean::guillemets` that replaces `<<` to `«` and `>>` to `»`.
