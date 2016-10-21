@@ -89,6 +89,9 @@ fn char_class(c: char) -> CharClass {
 pub fn ellipsis<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
     lazy_static! {
         static ref REGEX: Regex = Regex::new(r"\.\.\.|\. \. \. ").unwrap();
+        static ref UNICODE_ELLIPSIS: &'static [u8] = "…".as_bytes();
+        static ref NB_ELLIPSIS: &'static [u8] = ". . . ".as_bytes();
+        static ref FULL_NB_ELLIPSIS: &'static [u8] = ". . . ".as_bytes();
     }
     let input = input.into();
     let first = REGEX.find(&input);
@@ -100,13 +103,13 @@ pub fn ellipsis<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
         let mut i = 0;
         while i < len {
             if i + 3 <= len && &rest[i..(i + 3)] == &[b'.', b'.', b'.'] {
-                output.extend_from_slice("…".as_bytes());
+                output.extend_from_slice(*UNICODE_ELLIPSIS);
                 i += 3;
             } else if i + 6 <= len && &rest[i..(i + 6)] == &[b'.', b' ', b'.', b' ', b'.', b' '] {
                 if i + 6 == len || rest[i + 6] != b'.' {
-                    output.extend_from_slice(". . . ".as_bytes());
+                    output.extend_from_slice(*NB_ELLIPSIS);
                 } else {
-                    output.extend_from_slice(". . . ".as_bytes());
+                    output.extend_from_slice(*FULL_NB_ELLIPSIS);
                 }
                 i += 6;
             } else {
@@ -267,6 +270,8 @@ pub fn quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
 pub fn dashes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
     lazy_static! {
         static ref REGEX: Regex = Regex::new(r"\x2D\x2D").unwrap();
+        static ref EN_SPACE: &'static [u8] = "–".as_bytes();
+        static ref EM_SPACE: &'static [u8] = "—".as_bytes();
     }
     let input = input.into();
     let first = REGEX.find(&input);
@@ -279,10 +284,10 @@ pub fn dashes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
         while i < len {
             if i + 2 <= len && &rest[i..(i + 2)] == &[b'-', b'-'] {
                 if i + 2 < len && rest[i + 2] == b'-' {
-                    output.extend_from_slice("—".as_bytes());
+                    output.extend_from_slice(*EM_SPACE);
                     i += 3;
                 } else {
-                    output.extend_from_slice("–".as_bytes());
+                    output.extend_from_slice(*EN_SPACE);
                     i += 2;
                 }
             } else {
@@ -312,6 +317,8 @@ pub fn dashes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
 pub fn guillemets<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
     lazy_static! {
         static ref REGEX: Regex = Regex::new(r"<<|>>").unwrap();
+        static ref OPENING_GUILLEMET: &'static [u8] = "«".as_bytes();
+        static ref CLOSING_GUILLEMET: &'static [u8] = "»".as_bytes();
     }
     let input = input.into();
     let first = REGEX.find(&input);
@@ -323,10 +330,10 @@ pub fn guillemets<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
         let mut i = 0;
         while i < len {
             if i + 2 <= len && &rest[i..(i + 2)] == &[b'<', b'<'] {
-                output.extend_from_slice("«".as_bytes());
+                output.extend_from_slice(*OPENING_GUILLEMET);
                 i += 2;
             } else if i+2 <= len && &rest[i..(i + 2)] == &[b'>', b'>'] {
-                output.extend_from_slice("»".as_bytes());
+                output.extend_from_slice(*CLOSING_GUILLEMET);
                 i += 2;
             } else {
                 output.push(rest[i]);
