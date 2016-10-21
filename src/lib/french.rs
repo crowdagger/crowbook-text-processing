@@ -62,6 +62,10 @@ pub struct FrenchFormatter {
     typographic_quotes: bool,
     /// Enaple typographic ellipsis
     typographic_ellipsis: bool,
+    /// Enable dashes replacement
+    ligature_dashes: bool,
+    /// Enable guillemets replacement
+    ligature_guillemets: bool,
 }
 
 impl Default for FrenchFormatter {
@@ -73,6 +77,8 @@ impl Default for FrenchFormatter {
             threshold_real_word: 3,
             typographic_quotes: true,
             typographic_ellipsis: true,
+            ligature_dashes: false,
+            ligature_guillemets: false,
         }
     }
 }
@@ -146,6 +152,22 @@ impl FrenchFormatter {
         self
     }
 
+    /// If set to true, replaces `--`to `–` and `---` to `—`.
+    ///
+    /// Default is false.
+    pub fn ligature_dashes(&mut self, b: bool) -> &mut Self {
+        self.ligature_dashes = b;
+        self
+    }
+
+    /// If set to true, replaces `<<` to `«` and `>>` to `»`.
+    ///
+    /// Default is false.
+    pub fn ligature_guillemets(&mut self, b: bool) -> &mut Self {
+        self.ligature_guillemets = b;
+        self
+    }
+
     /// (Try to) Format a string according to french typographic rules.
     ///
     /// This method should be called for each paragraph, as it makes some suppositions that
@@ -187,6 +209,14 @@ impl FrenchFormatter {
     /// spaces according to output format
     fn format_output<'a, S: Into<Cow<'a, str>>>(&self, input: S, output: Output) -> Cow<'a, str> {
         let mut input = clean::whitespaces(input); // first pass to remove whitespaces
+
+        if self.ligature_dashes {
+            input = clean::dashes(input);
+        }
+
+        if self.ligature_guillemets {
+            input = clean::guillemets(input);
+        }
 
         if self.typographic_quotes {
             input = clean::quotes(input);
