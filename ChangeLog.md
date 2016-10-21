@@ -4,6 +4,8 @@ ChangeLog
 unreleased
 -------------
 * Added a binary, so it can be used interactively.
+* Added `clean::dashes` that replaces `--` to `–` and `---` to `—`.
+* Added `clean::guillemets` that replaces `<<` to `«` and `>>` to `»`.
 
 0.2.0 (2016-10-20)
 ---------------------
