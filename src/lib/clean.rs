@@ -297,6 +297,51 @@ pub fn dashes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
     }
 }
 
+/// Replaces `<<` with `«` and `>>` with `»`.
+///
+/// This can be useful if you need those characters (e.g. for french texts) but
+/// don't have an easy access to them on your computer but, as the `dashes` function,
+/// it should be used with caution, as `<<` and `>>` can also be used for other things
+/// (typically to mean "very inferior to" or "very superior to").
+///
+/// # Example
+///
+/// use crowbook_text_processing::clean;
+/// let s = clean::guillemets("<< Foo >>");
+/// assert_eq!(&s, "« Foo »");
+/// ```
+pub fn guillemets<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
+    lazy_static! {
+        static ref REGEX: Regex = Regex::new(r"<<|>>").unwrap();
+    }
+    let input = input.into();
+    let first = REGEX.find(&input);
+    if let Some((first, _)) = first {
+        let mut output: Vec<u8> = Vec::with_capacity(input.len());
+        output.extend_from_slice(input[0..first].as_bytes());
+        let rest = input[first..].bytes().collect::<Vec<_>>();
+        let len = rest.len();
+        let mut i = 0;
+        while i < len {
+            if i + 2 <= len && &rest[i..(i + 2)] == &[b'<', b'<'] {
+                output.extend_from_slice("«".as_bytes());
+                i += 2;
+            } else if i+2 <= len && &rest[i..(i + 2)] == &[b'>', b'>'] {
+                output.extend_from_slice("»".as_bytes());
+                i += 2;
+            } else {
+                output.push(rest[i]);
+                i += 1;
+            }
+        }
+        Cow::Owned(String::from_utf8(output).unwrap())
+    } else {
+        input
+    }
+}
+
+
+
 #[test]
 fn whitespaces_1() {
     let s = "   Remove    supplementary   spaces    but    don't    trim     either   ";
@@ -435,3 +480,26 @@ fn dashes_3() {
     assert_eq!(&s, "foo — bar–");
 }
     
+#[test]
+fn guillemets_1() {
+    let s = guillemets("<< Foo >>");
+    assert_eq!(&s, "« Foo »");
+}
+
+#[test]
+fn guillemets_2() {
+    let s = guillemets("<< Foo");
+    assert_eq!(&s, "« Foo");
+}
+
+#[test]
+fn guillemets_3() {
+    let s = guillemets("Foo >>");
+    assert_eq!(&s, "Foo »");
+}
+
+#[test]
+fn guillemets_4() {
+    let s = guillemets("<< Foo < Bar >>");
+    assert_eq!(&s, "« Foo < Bar »");
+}
