@@ -20,6 +20,7 @@ path = "src/lib/lib.rs"
 [[bin]]
 name = "crowbook_text_processing"
 path = "src/bin/main.rs"
+doc = false
 
 [dependencies]
 regex = "0.1"
