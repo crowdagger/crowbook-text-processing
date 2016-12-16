@@ -63,6 +63,11 @@
 //!
 //! * an increase of `x` in `0.x.y` means breaking changes.
 //! * an increase of `y` in `0.x.y` means non-breaking changes.
+//!
+//! # License
+//!
+//! This is free software, published under the [Mozilla Public License,
+//! version 2.0](https://www.mozilla.org/en-US/MPL/2.0/).
 
 #![deny(missing_docs)]
 
