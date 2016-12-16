@@ -1,8 +1,8 @@
-## crowbook-text-processing
-
 [![Travis status](https://img.shields.io/travis/lise-henry/crowbook-text-processing.svg)](https://travis-ci.org/lise-henry/crowbook-text-processing)
 
 [See the full library documentation on Docs.rs.](https://docs.rs/crowbook-text-processing)
+
+# crowbook-text-processing
 
 Provides some utilities functions for escaping text (to HTML or
 LaTeX) and formatting it according to typographic rules (smart
@@ -64,7 +64,12 @@ While not yet at version `1.0`, this crates tries to follows semantic
 versioning in the following way:
 
 * an increase of `x` in `0.x.y` means breaking changes.
-* an increase of `y` in `0.x.y` means non-breaking changes.Some utilities functions for processing texts.
+* an increase of `y` in `0.x.y` means non-breaking changes.
+
+## License
+
+This is free software, published under the [Mozilla Public License,
+version 2.0](https://www.mozilla.org/en-US/MPL/2.0/).
 
 ## ChangeLog
 
