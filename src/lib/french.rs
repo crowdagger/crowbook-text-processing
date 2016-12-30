@@ -523,6 +523,20 @@ fn french_quotes_3() {
 }
 
 #[test]
+fn french_quotes_4() {
+    let s = "« court »";
+    let res = FrenchFormatter::new().format(s);
+    assert_eq!(&res, "« court »");
+}
+
+#[test]
+fn french_quotes_5() {
+    let s = "« beaucoup, beaucoup plus long »";
+    let res = FrenchFormatter::new().format(s);
+    assert_eq!(&res, "« beaucoup, beaucoup plus long »");
+}
+
+#[test]
 fn french_dashes_1() {
     let s = "Il faudrait gérer ces tirets – sans ça certains textes rendent mal – un jour ou \
              l'autre";
