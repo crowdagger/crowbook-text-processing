@@ -318,7 +318,6 @@ impl FrenchFormatter {
                                         let j = find_next(&chars, '»', i);
                                         if let Some(j) = j {
                                             if chars[j - 1].is_whitespace() {
-                                                println!("i: {}, j: {}", i, j);
                                                 if i <= 1 ||
                                                     j - i > self.threshold_quote {
                                                         // Either '«' was at the beginning
