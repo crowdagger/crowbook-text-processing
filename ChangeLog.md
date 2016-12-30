@@ -1,6 +1,11 @@
 ChangeLog
 ==========
 
+0.2.4 (2016-12-30)
+----------------------
+* Removed debug println (oops sorry should have checked before
+  publishing previous release!)
+
 0.2.3 (2016-12-30)
 ----------------------
 * Fix the french formatting algorithm for short quotes.
