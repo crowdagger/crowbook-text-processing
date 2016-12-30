@@ -73,7 +73,7 @@ impl Default for FrenchFormatter {
         FrenchFormatter {
             threshold_currency: 3,
             threshold_unit: 2,
-            threshold_quote: 28,
+            threshold_quote: 20,
             threshold_real_word: 3,
             typographic_quotes: true,
             typographic_ellipsis: true,
@@ -315,15 +315,13 @@ impl FrenchFormatter {
                                         }
                                     }
                                     '«' => {
-                                        if i <= 1 {
-                                            nb_char
-                                        } else {
-                                            let j = find_next(&chars, '»', i);
-                                            if let Some(j) = j {
-                                                if chars[j - 1].is_whitespace() {
-                                                    if j >= chars.len() - 1 ||
-                                                       j - 1 > self.threshold_quote {
-                                                        // Either '»' is at the end
+                                        let j = find_next(&chars, '»', i);
+                                        if let Some(j) = j {
+                                            if chars[j - 1].is_whitespace() {
+                                                println!("i: {}, j: {}", i, j);
+                                                if i <= 1 ||
+                                                    j - i > self.threshold_quote {
+                                                        // Either '«' was at the beginning
                                                         // => assume it is a dialogue
                                                         // or it's a quote
                                                         // => 'large' space too
@@ -335,20 +333,19 @@ impl FrenchFormatter {
                                                         chars[j - 1] = nb_char_narrow;
                                                         nb_char_narrow
                                                     }
-                                                } else {
-                                                    // wtf formatting?
-                                                    nb_char
-                                                }
                                             } else {
-                                                // No ending quote found, assume is a dialogue
+                                                // wtf formatting?
                                                 nb_char
                                             }
+                                        } else {
+                                            // No ending quote found, assume is a dialogue
+                                            nb_char
                                         }
-                                    } // TODO: better heuristic: use narrow nb_char if not at front?
+                                    }, // TODO: better heuristic: use narrow nb_char if not at front?
                                     _ => unreachable!(),
                                 };
                                 chars[i + 1] = replacing_char;
-                            }
+                        }
                         }
                         _ => (),
                     }
@@ -524,16 +521,16 @@ fn french_quotes_3() {
 
 #[test]
 fn french_quotes_4() {
-    let s = "« court »";
+    let s = "test « court »";
     let res = FrenchFormatter::new().format(s);
-    assert_eq!(&res, "« court »");
+    assert_eq!(&res, "test « court »");
 }
 
 #[test]
 fn french_quotes_5() {
-    let s = "« beaucoup, beaucoup plus long »";
+    let s = "test « beaucoup, beaucoup plus long »";
     let res = FrenchFormatter::new().format(s);
-    assert_eq!(&res, "« beaucoup, beaucoup plus long »");
+    assert_eq!(&res, "test « beaucoup, beaucoup plus long »");
 }
 
 #[test]
