@@ -1,6 +1,11 @@
 ChangeLog
 ==========
 
+0.2.3 (2016-12-30)
+----------------------
+* Fix the french formatting algorithm for short quotes.
+* Change default `threshold_quote` value to 20.
+
 0.2.2 (2016-10-21)
 ----------------------
 * Fix possible `character boundary` panic in `clean::quotes`.
