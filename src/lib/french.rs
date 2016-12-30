@@ -114,7 +114,7 @@ impl FrenchFormatter {
     /// After that number of characters, assume it's not a quote of a single
     /// word or a few words, but a dialog.
     ///
-    /// Default is `28` (just enough for « anticonstitutionnellement »).
+    /// Default is `20`.
     pub fn threshold_quote(&mut self, t: usize) -> &mut Self {
         self.threshold_quote = t;
         self
