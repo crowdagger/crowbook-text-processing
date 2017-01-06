@@ -1,8 +1,8 @@
 ChangeLog
 ==========
 
-unreleased
-------------
+0.2.5 (2017-01-06)
+----------------------
 * Upgrade Regex dependency to 0.2.
 
 0.2.4 (2016-12-30)
