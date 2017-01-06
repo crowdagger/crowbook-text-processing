@@ -1,6 +1,10 @@
 ChangeLog
 ==========
 
+unreleased
+------------
+* Upgrade Regex dependency to 0.2.
+
 0.2.4 (2016-12-30)
 ----------------------
 * Removed debug println (oops sorry should have checked before

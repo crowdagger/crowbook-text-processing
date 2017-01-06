@@ -117,8 +117,9 @@ pub fn html<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
         static ref REGEX: Regex = Regex::new("[<>&]").unwrap();
     }
     let input = input.into();
-    let first = REGEX.find(&input);
-    if let Some((first, _)) = first {
+    let first = REGEX.find(&input)
+        .map(|mat| mat.start());
+    if let Some(first) = first {
         let len = input.len();
         let mut output = Vec::with_capacity(len + len / 2);
         output.extend_from_slice(input[0..first].as_bytes());
@@ -173,8 +174,9 @@ pub fn tex<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
        static ref REGEX: Regex = Regex::new(REGEX_LITERAL).unwrap();
     }
 
-    let first = REGEX.find(&input);
-    if let Some((first, _)) = first {
+    let first = REGEX.find(&input)
+        .map(|mat| mat.start());
+    if let Some(first) = first {
         let len = input.len();
         let mut output = Vec::with_capacity(len + len / 2);
         output.extend_from_slice(input[0..first].as_bytes());

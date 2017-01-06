@@ -32,8 +32,9 @@ pub fn whitespaces<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
         static ref REGEX: Regex = Regex::new(r"[  \x{202F}\x{2002}]{2,}?").unwrap();
     }
     let input = input.into();
-    let first = REGEX.find(&input);
-    if let Some((first, _)) = first {
+    let first = REGEX.find(&input)
+        .map(|mat| mat.start());
+    if let Some(first) = first {
         let mut new_s = String::with_capacity(input.len());
         new_s.push_str(&input[0..first]);
         let mut previous_space = false;
@@ -94,8 +95,9 @@ pub fn ellipsis<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
         static ref FULL_NB_ELLIPSIS: &'static [u8] = ". . . ".as_bytes();
     }
     let input = input.into();
-    let first = REGEX.find(&input);
-    if let Some((first, _)) = first {
+    let first = REGEX.find(&input)
+        .map(|mat| mat.start());
+    if let Some(first) = first {
         let mut output: Vec<u8> = Vec::with_capacity(input.len());
         output.extend_from_slice(input[0..first].as_bytes());
         let rest = input[first..].bytes().collect::<Vec<_>>();
@@ -145,8 +147,9 @@ pub fn quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
         static ref REGEX: Regex = Regex::new("[\"\']").unwrap();
     }
     let input = input.into();
-    let first = REGEX.find(&input);
-    if let Some((mut first, _)) = first {
+    let first = REGEX.find(&input)
+        .map(|mat| mat.start());
+    if let Some(mut first) = first {
         let mut new_s = String::with_capacity(input.len());
         if first > 0 {
             // Move one step backward since we might need to know if previous char was
@@ -278,8 +281,9 @@ pub fn dashes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
         static ref EM_SPACE: &'static [u8] = "—".as_bytes();
     }
     let input = input.into();
-    let first = REGEX.find(&input);
-    if let Some((first, _)) = first {
+    let first = REGEX.find(&input)
+        .map(|mat| mat.start());
+    if let Some(first) = first {
         let mut output: Vec<u8> = Vec::with_capacity(input.len());
         output.extend_from_slice(input[0..first].as_bytes());
         let rest = input[first..].bytes().collect::<Vec<_>>();
@@ -325,8 +329,9 @@ pub fn guillemets<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
         static ref CLOSING_GUILLEMET: &'static [u8] = "»".as_bytes();
     }
     let input = input.into();
-    let first = REGEX.find(&input);
-    if let Some((first, _)) = first {
+    let first = REGEX.find(&input)
+        .map(|mat| mat.start());
+    if let Some(first) = first {
         let mut output: Vec<u8> = Vec::with_capacity(input.len());
         output.extend_from_slice(input[0..first].as_bytes());
         let rest = input[first..].bytes().collect::<Vec<_>>();
