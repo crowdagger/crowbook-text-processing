@@ -468,15 +468,19 @@ fn get_next_word(v: &[char], n: usize) -> &[char] {
     let mut beginning = n;
     let mut end = v.len();
 
-    for i in n..v.len() {
-        if v[i].is_alphabetic() {
+    for (i, car) in v.iter()
+        .enumerate()
+        .skip(n) {
+        if car.is_alphabetic() {
             beginning = i;
             break;
         }
     }
 
-    for i in beginning..v.len() {
-        if v[i].is_whitespace() {
+    for (i, car) in v.iter()
+        .enumerate()
+        .skip(beginning) {
+        if car.is_whitespace() {
             end = i - 1;
             break;
         }
