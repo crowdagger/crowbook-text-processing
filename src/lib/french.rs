@@ -436,8 +436,10 @@ fn is_trouble(c: char) -> bool {
 
 // Find first char `c` in slice `v` after index `n`
 fn find_next(v: &[char], c: char, n: usize) -> Option<usize> {
-    for i in n..v.len() {
-        if v[i] == c {
+    for (i, car) in v.iter()
+        .enumerate()
+        .skip(n) {
+        if *car == c {
             return Some(i);
         }
     }
