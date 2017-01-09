@@ -244,13 +244,6 @@ pub fn quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
                         _ => '\'',
                     };
                     new_s.push(replacement);
-                    // if i > 0 && !chars[i - 1].is_whitespace() {
-                    //     new_s.push('’');
-                    // } else if i < chars.len() - 1 && !chars[i + 1].is_whitespace() {
-                    //     new_s.push('‘');
-                    // } else {
-                    //     new_s.push('\'');
-                    // }
                 }
                 _ => new_s.push(c),
             }
