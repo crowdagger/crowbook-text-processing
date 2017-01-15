@@ -23,16 +23,50 @@
 use std::borrow::Cow;
 
 use regex::Regex;
+use regex::Captures;
 
 use common::{NB_CHAR, NB_CHAR_NARROW, NB_CHAR_EM};
+
+
+/// Escape narrow non-breaking spaces for HTML.
+///
+/// This is unfortunately sometimes necessary as some fonts/renderers don't support the
+/// narrow non breaking space character.
+///
+/// This function works by declaring a span with class "nnbsp" containing
+/// the previous and next word, and replacing narrow non breaking space with the non-breaking
+/// space character.
+///
+/// Thus, in order to display correctly, you will need to add some style to this span, e.g.:
+///
+/// ```css
+/// .nnbsp {
+///    word-spacing: -0.13em;
+///  }
+/// ```
+pub fn nnbsp<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
+    let input = input.into();
+    lazy_static! {
+        static ref REGEX: Regex = Regex::new(r"\S*\x{202F}[\S\x{202F}]*").unwrap();
+        static ref REGEX_LOCAL: Regex = Regex::new(r"\x{202F}").unwrap();
+    }
+    if REGEX.is_match(&input) {
+        let res = REGEX.replace_all(&input, |caps: &Captures| {
+            format!("<span class = \"nnbsp\">{}</span>",
+                    REGEX_LOCAL.replace_all(&caps[0], "&#160;"))
+        });
+        Cow::Owned(res.into_owned())
+    } else {
+        input
+    }
+}
 
 
 /// Escape non breaking spaces for HTML.
 ///
 /// This is done so there is no problem for
 /// displaying them if the font or browser doesn't know what to do
-/// with them (particularly the narrow non breaking space which isn't
-/// very well supported).
+/// with them (the narrow non breaking space which isn't  very well supported).
 ///
 /// In order to work correctly, this will require a CSS style with
 ///
@@ -43,6 +77,7 @@ use common::{NB_CHAR, NB_CHAR_NARROW, NB_CHAR_EM};
 /// ```
 ///
 /// Else, narrow spaces won't be no-breaking, and that might be ugly.
+#[deprecated(since="0.2.6", note="use `nnbsp` instead")]
 pub fn nb_spaces<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
     let input = input.into();
     if let Some(first) = input.chars().position(|c| match c {
@@ -298,5 +333,19 @@ fn nb_spaces_escape() {
     let actual = nb_spaces("This contains non breaking spaces");
     let expected = "This<span class = \"nbsp\">&#160;</span>contains\
                     <span class = \"nnbsp\">&#8201;</span>non breaking spaces";
+    assert_eq!(&actual, expected);
+}
+
+#[test]
+fn nnbsp_1() {
+    let actual = nnbsp("Test ?"); // nnbsp before ?
+    let expected = "<span class = \"nnbsp\">Test&#160;?</span>";
+    assert_eq!(&actual, expected);
+}
+
+#[test]
+fn nnbsp_2() {
+    let actual = nnbsp("Ceci est un « Test » !"); // nnbsp before ! and before/after quotes
+    let expected = "Ceci est un <span class = \"nnbsp\">«&#160;Test&#160;»&#160;!</span>";
     assert_eq!(&actual, expected);
 }
