@@ -1,8 +1,8 @@
 ChangeLog
 ==========
 
-unreleased
--------------
+0.2.6 (2017-01-17)
+----------------------
 * Add `escape::nnbsp` function that should be more reliable to allow "proper"
   displaying of narrow non breaking spaces on nonconforming devices
   than `escape::nb_spaces`.
