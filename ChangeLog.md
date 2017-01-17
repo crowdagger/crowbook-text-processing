@@ -1,6 +1,13 @@
 ChangeLog
 ==========
 
+unreleased
+-------------
+* Add `escape::nnbsp` function that should be more reliable to allow "proper"
+  displaying of narrow non breaking spaces on nonconforming devices
+  than `escape::nb_spaces`.
+* Thus, `escape::nb_spaces` is deprecated.
+
 0.2.5 (2017-01-06)
 ----------------------
 * Upgrade Regex dependency to 0.2.
