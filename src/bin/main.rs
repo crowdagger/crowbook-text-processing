@@ -14,7 +14,7 @@ use std::process::exit;
 const TOOLS: &'static[(&'static str, &'static str)] = &[
     ("escape_html", "escape text for HTML display"),
     ("escape_tex", "escape text for LaTeX display"),
-    ("escape_nb_spaces", "escape non-breaking spaces using HTML entities"),
+    ("escape_nnbsp", "escape narrow non-breaking spaces in HTML"),
     ("escape_nb_spaces_tex", "escape non-breaking spaces using ‘~’ symbol"),
     ("clean_ellipsis", "use unicode character ‘…’ for ellipsis"),
     ("clean_quotes", "try to replace straight quotes with curly ones"),
@@ -61,7 +61,7 @@ Valid transformations are the following:",
                 output = match argument.as_ref() {
                     "escape_html" => escape::html(output),
                     "escape_tex" => escape::tex(output),
-                    "escape_nb_spaces" => escape::nb_spaces(output),
+                    "escape_nbsp" => escape::nnbsp(output),
                     "escape_nb_spaces_tex" => escape::nb_spaces_tex(output),
                     "clean_quotes" => clean::quotes(output),
                     "clean_ellipsis" => clean::ellipsis(output),
