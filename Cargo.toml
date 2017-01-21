@@ -8,6 +8,7 @@ keywords = ["text"]
 repository = "https://github.com/lise-henry/crowbook-text-processing/"
 documentation = "https://docs.rs/crowbook-text-processing"
 license = "MPL-2.0"
+categories = ["text-processing"]
 
 exclude = [
         "benches/perf.ods",
