@@ -1,6 +1,10 @@
 ChangeLog
 ==========
 
+0.2.7 (2018-01-14)
+----------------------
+* Escape square braces in LaTeX
+
 0.2.6 (2017-01-17)
 ----------------------
 * Add `escape::nnbsp` function that should be more reliable to allow "proper"
