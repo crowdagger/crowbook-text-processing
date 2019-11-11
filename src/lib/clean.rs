@@ -311,6 +311,7 @@ pub fn dashes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
 ///
 /// # Example
 ///
+/// ```
 /// use crowbook_text_processing::clean;
 /// let s = clean::guillemets("<< Foo >>");
 /// assert_eq!(&s, "« Foo »");
