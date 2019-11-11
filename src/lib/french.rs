@@ -253,7 +253,7 @@ impl FrenchFormatter {
                 let next = chars[i + 1];
 
                 match current {
-                    '0'...'9' => {
+                    '0'..='9' => {
                         if i == 0 || !chars[i - 1].is_alphabetic() {
                             is_number_series = true;
                         }
