@@ -1,6 +1,10 @@
 ChangeLog
 ==========
 
+0.2.8 (2019-11-11)
+----------------------
+* Update Regex dependency to newer version
+
 0.2.7 (2018-01-14)
 ----------------------
 * Escape square braces in LaTeX

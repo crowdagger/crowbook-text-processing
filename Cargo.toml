@@ -1,6 +1,6 @@
 [package]
 name = "crowbook-text-processing"
-version = "0.2.7"
+version = "0.2.8"
 authors = ["Elisabeth Henry <liz.henry@ouvaton.org>"]
 description = "Provides some utilities functions for escaping text (HTML/LaTeX) and formatting it according to typographic rules (smart quotes, ellipsis, french typograhic rules)"
 readme = "README.md"
