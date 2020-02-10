@@ -13,6 +13,6 @@ fn main() {
     
     let s = " Une chaîne en français ! On voudrait un résultat « typographiquement correct ».";
     let new_s = FrenchFormatter::new().format(s);
-    println!("for HTML: {}", escape::nb_spaces(escape::html(new_s.clone())));
+    println!("for HTML: {}", escape::nnbsp(escape::html(new_s.clone())));
     println!("for LaTeX: {}", escape::nb_spaces_tex(escape::tex(new_s)));
 }

@@ -62,46 +62,6 @@ pub fn nnbsp<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
 }
 
 
-/// Escape non breaking spaces for HTML.
-///
-/// This is done so there is no problem for
-/// displaying them if the font or browser doesn't know what to do
-/// with them (the narrow non breaking space which isn't  very well supported).
-///
-/// In order to work correctly, this will require a CSS style with
-///
-/// ```css
-/// .nnbsp {
-///    white-space: nowrap;
-/// }
-/// ```
-///
-/// Else, narrow spaces won't be no-breaking, and that might be ugly.
-#[deprecated(since="0.2.6", note="use `nnbsp` instead")]
-pub fn nb_spaces<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
-    let input = input.into();
-    if let Some(first) = input.chars().position(|c| match c {
-        NB_CHAR | NB_CHAR_NARROW | NB_CHAR_EM => true,
-        _ => false,
-    }) {
-        let mut chars = input.chars().collect::<Vec<_>>();
-        let rest = chars.split_off(first);
-        let mut output = chars.into_iter().collect::<String>();
-        for c in rest {
-            match c {
-                NB_CHAR_NARROW => output.push_str(r#"<span class = "nnbsp">&#8201;</span>"#),
-                NB_CHAR_EM => output.push_str(r#"<span class = "ensp">&#8194;</span>"#),
-                NB_CHAR => output.push_str(r#"<span class = "nbsp">&#160;</span>"#),
-                _ => output.push(c),
-            }
-        }
-        Cow::Owned(output)
-    } else {
-        input.into()
-    }
-}
-
-
 /// Escape non breaking spaces for LaTeX, replacing them with the appropriate TeX code.
 /// This ensures it works correctly with some LaTeX versions (and it makes
 /// the non-breaking spaces shenanigans more visible with most editors)
@@ -279,7 +239,7 @@ fn tex_0() {
 #[test]
 fn nb_spaces_0() {
     let s = "Some string without any character to escape";
-    let result = nb_spaces(s);
+    let result = nnbsp(s);
     assert_eq!(s, &result);
 }
 
@@ -347,13 +307,6 @@ fn quotes_escape() {
     assert_eq!(&actual, expected);
 }
 
-#[test]
-fn nb_spaces_escape() {
-    let actual = nb_spaces("This contains non breaking spaces");
-    let expected = "This<span class = \"nbsp\">&#160;</span>contains\
-                    <span class = \"nnbsp\">&#8201;</span>non breaking spaces";
-    assert_eq!(&actual, expected);
-}
 
 #[test]
 fn nnbsp_1() {
