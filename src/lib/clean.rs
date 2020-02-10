@@ -257,7 +257,7 @@ pub fn quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
 
 /// Replace double dashes (`--`) and triple dashes (`---`) to en dash and em dash, respectively.
 ///
-/// This function can be useful when writing literaty texts, but should be used with caution
+/// This function can be useful when writing literary texts, but should be used with caution
 /// as double and triple dashes can have special meanings.
 ///
 /// # Example
