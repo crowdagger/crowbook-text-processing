@@ -8,12 +8,8 @@ use std::default::Default;
 use common::{NB_CHAR, NB_CHAR_NARROW, NB_CHAR_EM};
 use common::is_whitespace;
 use clean;
+use escape;
 
-/// Output format, to determine how to escape characters
-enum Output {
-    Default,
-    Latex,
-}
 
 
 /// French typographic formatter.
@@ -46,7 +42,7 @@ enum Output {
 ///              .typographic_ellipsis(false) // don't replace ellipsis
 ///              .format_tex(input); // format to tex (so non-breaking
 ///                                  // spaces are visible in assert_eq!)
-/// assert_eq!(&output, "Un texte à ‘formater’, n’est-ce pas~?");
+/// assert_eq!(&output, "Un texte à ‘formater’, n’est-ce pas\\,?");
 /// ```
 #[derive(Debug)]
 pub struct FrenchFormatter {
@@ -186,28 +182,6 @@ impl FrenchFormatter {
     /// println!("{}", s);
     /// ```
     pub fn format<'a, S: Into<Cow<'a, str>>>(&self, input: S) -> Cow<'a, str> {
-        self.format_output(input, Output::Default)
-    }
-
-    /// (Try to) Format a string according to french typographic rules, and use '~' so it works
-    /// correctly with LaTeX output.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use crowbook_text_processing::FrenchFormatter;
-    /// let f = FrenchFormatter::new();
-    /// let s = f.format_tex("« Est-ce bien formaté ? »");
-    /// assert_eq!(&s, "«~Est-ce bien formaté~?~»");
-    /// ```
-    pub fn format_tex<'a, S: Into<Cow<'a, str>>>(&self, input: S) -> Cow<'a, str> {
-        self.format_output(input, Output::Latex)
-    }
-
-
-    /// (Try to) Format a string according to french typographic rules, and escaping non-breaking
-    /// spaces according to output format
-    fn format_output<'a, S: Into<Cow<'a, str>>>(&self, input: S, output: Output) -> Cow<'a, str> {
         let mut input = clean::whitespaces(input); // first pass to remove whitespaces
 
         if self.ligature_dashes {
@@ -235,10 +209,7 @@ impl FrenchFormatter {
             return input;
         }
 
-        let (nb_char, nb_char_em, nb_char_narrow) = match output {
-            Output::Default => (NB_CHAR, NB_CHAR_EM, NB_CHAR_NARROW),
-            Output::Latex => ('~', '~', '~'),
-        };
+        let (nb_char, nb_char_em, nb_char_narrow) = (NB_CHAR, NB_CHAR_EM, NB_CHAR_NARROW);
 
         let mut chars = input.chars().collect::<Vec<_>>();
         let mut is_number_series = false;
@@ -353,6 +324,32 @@ impl FrenchFormatter {
         }
         Cow::Owned(chars.into_iter().collect())
     }
+
+    /// (Try to) Format a string according to french typographic rules, escape the characters
+    /// that need to be escaped in LaTeX (e.g. backslashes) and use TeX commands ("~", "\enspace" "and "\,")
+    /// for non-breaking spaces so it works correctly with some LaTeX versions (and it makes
+    /// the non-breaking spaces shenanigans more visible with most editors)
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use crowbook_text_processing::FrenchFormatter;
+    /// let f = FrenchFormatter::new();
+    /// let s = f.format_tex("« Est-ce bien formaté ? »");
+    /// assert_eq!(&s, "«~Est-ce bien formaté\\,?~»");
+    /// ```
+    pub fn format_tex<'a, S: Into<Cow<'a, str>>>(&self, input: S) -> Cow<'a, str> {
+        escape::nb_spaces_tex(escape::tex(self.format(input)))
+    }
+
+    /// (Try to) Format a string according to french typographic rules, and escape the characters
+    /// that need to be escaped in HTML (e.g. &). Also use HTML commands instead
+    /// of unicode for narrow non-breaking spaces. See `escape::nnbsp`. It's a bit of a hack
+    /// to make it work in most browsers/ereaders.
+    pub fn format_html<'a, S: Into<Cow<'a, str>>>(&self, input: S) -> Cow<'a, str> {
+        escape::nnbsp(escape::html(self.format(input)))
+    }
+
 
     /// Return true if the character is a symbol that is used after number
     /// and should have a nb_char before
@@ -555,7 +552,7 @@ fn french_dashes_2() {
     let res = FrenchFormatter::new().format_tex(s);
     assert_eq!(&res,
                "Il faudrait gérer ces tirets –~sans ça certains textes rendent mal. Mais ce \
-                n’est pas si simple –~si~?");
+                n’est pas si simple –~si\\,?");
 }
 
 #[test]
@@ -564,35 +561,35 @@ fn french_numbers() {
 
     let s = Cow::Borrowed("10 000");
     let res = french.format_tex(s);
-    assert_eq!(&res, "10~000");
+    assert_eq!(&res, "10\\,000");
 
     let s = Cow::Borrowed("10 000 €");
     let res = french.format_tex(s);
-    assert_eq!(&res, "10~000~€");
+    assert_eq!(&res, "10\\,000\\,€");
 
     let s = Cow::Borrowed("10 000 euros");
     let res = french.format_tex(s);
-    assert_eq!(&res, "10~000 euros");
+    assert_eq!(&res, "10\\,000 euros");
 
     let s = Cow::Borrowed("10 000 EUR");
     let res = french.format_tex(s);
-    assert_eq!(&res, "10~000~EUR");
+    assert_eq!(&res, "10\\,000\\,EUR");
 
     let s = Cow::Borrowed("50 km");
     let res = french.format_tex(s);
-    assert_eq!(&res, "50~km");
+    assert_eq!(&res, "50\\,km");
 
     let s = Cow::Borrowed("50 %");
     let res = french.format_tex(s);
-    assert_eq!(&res, "50~%");
+    assert_eq!(&res, "50\\,\\%");
 
     let s = Cow::Borrowed("20 °C");
     let res = french.format_tex(s);
-    assert_eq!(&res, "20~°C");
+    assert_eq!(&res, "20\\,°C");
 
     let s = Cow::Borrowed("20 F");
     let res = french.format_tex(s);
-    assert_eq!(&res, "20~F");
+    assert_eq!(&res, "20\\,F");
 
     let s = Cow::Borrowed("20 BALLES");
     let res = french.format_tex(s);

@@ -102,14 +102,22 @@ pub fn nb_spaces<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
 }
 
 
-/// Escape non breaking spaces for LaTeX, replacing them with `~`.
+/// Escape non breaking spaces for LaTeX, replacing them with the appropriate TeX code.
+/// This ensures it works correctly with some LaTeX versions (and it makes
+/// the non-breaking spaces shenanigans more visible with most editors)
+///
+/// # Achtung
+///
+/// Since this function adds some LaTeX codes that use backslashes, it will cause issues
+/// if you then try to escape those characters. So if you must escape the text for LaTeX,
+/// this function should always be called **after** `escape::tex`.
 ///
 /// # Example
 ///
 /// ```
 /// use crowbook_text_processing::escape;
 /// let s = escape::nb_spaces_tex("Des espaces insécables ? Ça alors !");
-/// assert_eq!(&s, "Des espaces insécables~? Ça alors~!");
+/// assert_eq!(&s, "Des espaces insécables\\,? Ça alors\\,!");
 /// ```
 pub fn nb_spaces_tex<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
     let input = input.into();
@@ -122,7 +130,9 @@ pub fn nb_spaces_tex<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
         let mut output = chars.into_iter().collect::<String>();
         for c in rest {
             match c {
-                NB_CHAR_NARROW | NB_CHAR_EM | NB_CHAR => output.push('~'),
+                NB_CHAR_NARROW => output.push_str("\\,"),
+                NB_CHAR_EM => output.push_str("\\enspace "),
+                NB_CHAR => output.push('~'),
                 _ => output.push(c),
             }
         }

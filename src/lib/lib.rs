@@ -52,9 +52,6 @@
 //! println!("for text: {}", french.format(s));
 //! println!("for LaTeX: {}", escape::tex(french.format_tex(s)));
 //! ```
-//! # Requirements
-//!
-//! * `rustc >= 1.9.0`
 //!
 //! # Semantic versioning
 //!
