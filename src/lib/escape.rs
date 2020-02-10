@@ -44,7 +44,7 @@ use common::{NB_CHAR, NB_CHAR_NARROW, NB_CHAR_EM};
 ///    word-spacing: -0.13em;
 ///  }
 /// ```
-pub fn nnbsp<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
+pub fn nb_spaces_html<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
     let input = input.into();
     lazy_static! {
         static ref REGEX: Regex = Regex::new(r"\S*\x{202F}[\S\x{202F}]*").unwrap();
@@ -60,6 +60,17 @@ pub fn nnbsp<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
         input
     }
 }
+
+/// Old name of nb_spaces html
+#[deprecated(
+    since="1.0.0",
+    note="Renamed nb_spaces_html"
+)]
+pub fn nnbsp<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
+    nb_spaces_html(input)
+}
+
+
 
 
 /// Escape non breaking spaces for LaTeX, replacing them with the appropriate TeX code.
@@ -239,7 +250,7 @@ fn tex_0() {
 #[test]
 fn nb_spaces_0() {
     let s = "Some string without any character to escape";
-    let result = nnbsp(s);
+    let result = nb_spaces_html(s);
     assert_eq!(s, &result);
 }
 
@@ -310,14 +321,14 @@ fn quotes_escape() {
 
 #[test]
 fn nnbsp_1() {
-    let actual = nnbsp("Test ?"); // nnbsp before ?
+    let actual = nb_spaces_html("Test ?"); // nnbsp before ?
     let expected = "<span class = \"nnbsp\">Test&#160;?</span>";
     assert_eq!(&actual, expected);
 }
 
 #[test]
 fn nnbsp_2() {
-    let actual = nnbsp("Ceci est un « Test » !"); // nnbsp before ! and before/after quotes
+    let actual = nb_spaces_html("Ceci est un « Test » !"); // nnbsp before ! and before/after quotes
     let expected = "Ceci est un <span class = \"nnbsp\">«&#160;Test&#160;»&#160;!</span>";
     assert_eq!(&actual, expected);
 }

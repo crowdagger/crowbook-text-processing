@@ -344,10 +344,10 @@ impl FrenchFormatter {
 
     /// (Try to) Format a string according to french typographic rules, and escape the characters
     /// that need to be escaped in HTML (e.g. &). Also use HTML commands instead
-    /// of unicode for narrow non-breaking spaces. See `escape::nnbsp`. It's a bit of a hack
+    /// of unicode for narrow non-breaking spaces. See `escape::nb_spaces_html`. It's a bit of a hack
     /// to make it work in most browsers/ereaders.
     pub fn format_html<'a, S: Into<Cow<'a, str>>>(&self, input: S) -> Cow<'a, str> {
-        escape::nnbsp(escape::html(self.format(input)))
+        escape::nb_spaces_html(escape::html(self.format(input)))
     }
 
 
