@@ -1,6 +1,17 @@
 ChangeLog
 ==========
 
+1.0.0 (2020-02-11)
+---------------------
+* French formatter now also specifies narrow and en breaking spaces for LaTeX instead of trusting it to use the good one
+* `french::format_tex` and `french::format_html` now also escape characters for LaTeX/HTML.
+* Since that's a sligtly breaking change, and the first one in a few
+  years, it seemed like a good reason to bump version to 1.0. This led
+  to a few more breaking changes: 
+    * `escape::nb_spaces`, which was already deprecated, has been
+      removed;
+	* `escape::nnbsp` has been deprecated and renamed `escape::nb_spaces_html`.
+	
 0.2.8 (2019-11-11)
 ----------------------
 * Update Regex dependency to newer version
