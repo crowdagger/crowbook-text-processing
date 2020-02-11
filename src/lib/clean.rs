@@ -13,10 +13,13 @@
 //! assert_eq!(&output, "Some ‘text’ whose formatting could be enhanced…");
 //! ```
 
-use common::is_whitespace;
-
 use regex::Regex;
+
 use std::borrow::Cow;
+
+use crate::common::is_whitespace;
+
+
 
 /// Removes unnecessary whitespaces from a String.
 ///

@@ -5,10 +5,10 @@
 use std::borrow::Cow;
 use std::default::Default;
 
-use common::{NB_CHAR, NB_CHAR_NARROW, NB_CHAR_EM};
-use common::is_whitespace;
-use clean;
-use escape;
+use crate::common::{NB_CHAR, NB_CHAR_NARROW, NB_CHAR_EM};
+use crate::common::is_whitespace;
+use crate::clean;
+use crate::escape;
 
 
 

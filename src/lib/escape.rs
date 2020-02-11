@@ -25,7 +25,7 @@ use std::borrow::Cow;
 use regex::Regex;
 use regex::Captures;
 
-use common::{NB_CHAR, NB_CHAR_NARROW, NB_CHAR_EM};
+use crate::common::{NB_CHAR, NB_CHAR_NARROW, NB_CHAR_EM};
 
 
 /// Escape narrow non-breaking spaces for HTML.

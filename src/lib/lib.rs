@@ -68,12 +68,15 @@
 
 #![deny(missing_docs)]
 
-extern crate regex;
 #[macro_use]
 extern crate lazy_static;
 
+#[cfg(test)] #[macro_use]
+extern crate pretty_assertions;
+
 pub mod escape;
 pub mod clean;
+pub mod caps;
 
 mod french;
 mod common;
