@@ -185,7 +185,7 @@ pub fn quotes<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
 /// ```
 pub fn tex<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
     let input = input.into();
-    const REGEX_LITERAL: &'static str = r"[<>&%$#_\x7E\x2D\{\}\[\]\^\\]";
+    const REGEX_LITERAL: &'static str = r"[!<>&%$#_\x7E\x2D\{\}\[\]\^\\]";
     lazy_static! {
        static ref REGEX: Regex = Regex::new(REGEX_LITERAL).unwrap();
     }
@@ -224,6 +224,7 @@ pub fn tex<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
                 b'^' => output.extend_from_slice(br"\textasciicircum{}"),
                 b'<' => output.extend_from_slice(br"\textless{}"),
                 b'>' => output.extend_from_slice(br"\textgreater{}"),
+                b'!' => output.extend_from_slice(br"!{}"),
                 b'\\' => output.extend_from_slice(br"\textbackslash{}"),
                 _ => output.push(c),
             }
