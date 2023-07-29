@@ -53,14 +53,6 @@
 //! println!("for LaTeX: {}", escape::tex(french.format_tex(s)));
 //! ```
 //!
-//! # Semantic versioning
-//!
-//! While not yet at version `1.0`, this crates tries to follows semantic
-//! versioning in the following way:
-//!
-//! * an increase of `x` in `0.x.y` means breaking changes.
-//! * an increase of `y` in `0.x.y` means non-breaking changes.
-//!
 //! # License
 //!
 //! This is free software, published under the [Mozilla Public License,

@@ -1,8 +1,4 @@
-[![Travis status](https://img.shields.io/travis/lise-henry/crowbook-text-processing.svg)](https://travis-ci.org/lise-henry/crowbook-text-processing)
-
 [See the full library documentation on Docs.rs.](https://docs.rs/crowbook-text-processing)
-
-# crowbook-text-processing
 
 Provides some utilities functions for escaping text (to HTML or
 LaTeX) and formatting it according to typographic rules (smart
@@ -54,17 +50,6 @@ let french = FrenchFormatter::new();
 println!("for text: {}", french.format(s));
 println!("for LaTeX: {}", escape::tex(french.format_tex(s)));
 ```
-## Requirements
-
-* `rustc >= 1.9.0`
-
-## Semantic versioning
-
-While not yet at version `1.0`, this crates tries to follows semantic
-versioning in the following way:
-
-* an increase of `x` in `0.x.y` means breaking changes.
-* an increase of `y` in `0.x.y` means non-breaking changes.
 
 ## License
 

@@ -1,6 +1,11 @@
 ChangeLog
 ==========
 
+1.1.0 (2023-07-29)
+======================
+* Fix LaTeX escaping (hce)
+* Update dependencies
+
 1.0.0 (2020-02-11)
 ---------------------
 * French formatter now also specifies narrow and en breaking spaces for LaTeX instead of trusting it to use the good one
