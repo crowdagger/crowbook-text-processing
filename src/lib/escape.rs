@@ -113,9 +113,24 @@ pub fn nb_spaces_tex<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
     }
 }
 
+/// Remove xml 1.0 invalid characters
+pub fn remove_xml_chars<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
+    lazy_static! {
+        static ref REGEX: Regex = Regex::new("[[\u{0000}-\u{0008}][\u{000E}-\u{001F}]\u{000B}\u{000C}]").unwrap();
+    }
+    let s = input.into();
+    match REGEX.replace_all(&s, "") {
+        // Annoyingly necessary so that borrow checker says it's ok
+        Cow::Borrowed(_) => s,
+        Cow::Owned(s) => Cow::Owned(s)
+    }
+}
+
 
 /// Escape characters for HTML output, replacing  `<`, `>`, and `&` with appropriate
 /// HTML entities.
+///
+/// Also remove the entities that cause problems in strict XHTML with XML1.
 ///
 /// **Warning**: this function was written for escaping text in a markdown
 /// text processor that is designed to run on a local machine, where the content
@@ -132,7 +147,7 @@ pub fn html<'a, S: Into<Cow<'a, str>>>(input: S) -> Cow<'a, str> {
     lazy_static! {
         static ref REGEX: Regex = Regex::new("[<>&]").unwrap();
     }
-    let input = input.into();
+    let input = remove_xml_chars(input.into());
     let first = REGEX.find(&input)
         .map(|mat| mat.start());
     if let Some(first) = first {
@@ -333,5 +348,12 @@ fn nnbsp_1() {
 fn nnbsp_2() {
     let actual = nb_spaces_html("Ceci est un « Test » !"); // nnbsp before ! and before/after quotes
     let expected = "Ceci est un <span class = \"nnbsp\">«&#160;Test&#160;»&#160;!</span>";
+    assert_eq!(&actual, expected);
+}
+
+#[test]
+fn xml_chars() {
+    let actual = html("Hey\u{000C}");
+    let expected = "Hey";
     assert_eq!(&actual, expected);
 }
