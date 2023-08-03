@@ -1,6 +1,10 @@
 ChangeLog
 ==========
 
+1.1.1 (2023-08-03)
+======================
+* `escape::html` now removes invalid XHTML characters
+
 1.1.0 (2023-07-29)
 ======================
 * Fix LaTeX escaping (hce)
